@@ -1,1 +1,319 @@
 
+% =====================================================================
+% Bibliography for main.tex -- IEEE Signal Processing Letters
+% Style: IEEEtran.bst (selected via \bibliographystyle{IEEEtran})
+%
+% Entries are copied verbatim from GNN_Backdoors.bib, the curated library
+% of this project; holm1979 comes from final_report.tex. Only the records
+% this letter may cite are kept here, so the manuscript has one .bib and
+% BibTeX sees no repeated keys. Add a record by copying it from
+% GNN_Backdoors.bib rather than retyping it.
+%
+% Scope: graph classification. Node-classification attacks are kept only
+% where the letter needs them for positioning.
+% =====================================================================
+
+% ---------- Graph neural networks ----------
+
+@inproceedings{gcn,
+  title     = {Semi-Supervised Classification with Graph Convolutional Networks},
+  author    = {Kipf, Thomas N. and Welling, Max},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2017}
+}
+
+@inproceedings{gat,
+  title     = {Graph Attention Networks},
+  author    = {Veli{\v{c}}kovi{\'c}, Petar and Cucurull, Guillem and Casanova, Arantxa and Romero, Adriana and Li{\`o}, Pietro and Bengio, Yoshua},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2018}
+}
+
+@inproceedings{gin,
+  title     = {How Powerful are Graph Neural Networks?},
+  author    = {Xu, Keyulu and Hu, Weihua and Leskovec, Jure and Jegelka, Stefanie},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019}
+}
+
+@inproceedings{graphsage,
+  title     = {Inductive Representation Learning on Large Graphs},
+  author    = {Hamilton, William L. and Ying, Rex and Leskovec, Jure},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2017}
+}
+
+% ---------- Spectral graph theory and graph signal processing ----------
+
+@book{chung1997spectral,
+  title     = {Spectral Graph Theory},
+  author    = {Chung, Fan R. K.},
+  series    = {CBMS Regional Conference Series in Mathematics},
+  volume    = {92},
+  publisher = {American Mathematical Society},
+  year      = {1997},
+  doi       = {10.1090/cbms/092}
+}
+
+@article{shuman2013gsp,
+  title   = {The Emerging Field of Signal Processing on Graphs: Extending High-Dimensional Data Analysis to Networks and Other Irregular Domains},
+  author  = {Shuman, David I. and Narang, Sunil K. and Frossard, Pascal and Ortega, Antonio and Vandergheynst, Pierre},
+  journal = {IEEE Signal Processing Magazine},
+  volume  = {30},
+  number  = {3},
+  pages   = {83--98},
+  year    = {2013},
+  doi     = {10.1109/MSP.2012.2235192}
+}
+
+% ---------- Benchmarks ----------
+
+@inproceedings{tudataset,
+  title     = {{TUDataset}: A Collection of Benchmark Datasets for Learning with Graphs},
+  author    = {Morris, Christopher and Kriege, Nils M. and Bause, Franka and Kersting, Kristian and Mutzel, Petra and Neumann, Marion},
+  booktitle = {ICML 2020 Workshop on Graph Representation Learning and Beyond (GRL+)},
+  year      = {2020}
+}
+
+@inproceedings{yang2016revisiting,
+  title     = {Revisiting Semi-Supervised Learning with Graph Embeddings},
+  author    = {Yang, Zhilin and Cohen, William W. and Salakhutdinov, Ruslan},
+  booktitle = {Proceedings of the 33rd International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {48},
+  pages     = {40--48},
+  year      = {2016},
+  url       = {https://proceedings.mlr.press/v48/yanga16.html}
+}
+
+% ---------- Graph backdoor attacks: graph classification ----------
+
+@inproceedings{sba2021,
+  author    = {Zhang, Zaixi and Jia, Jinyuan and Wang, Binghui and Gong, Neil Zhenqiang},
+  title     = {Backdoor Attacks to Graph Neural Networks},
+  booktitle = {Proceedings of the 26th ACM Symposium on Access Control Models and Technologies},
+  year      = {2021},
+  pages     = {15--26},
+  doi       = {10.1145/3450569.3463560}
+}
+
+@article{motif,
+  author  = {Zheng, Haibin and Xiong, Haiyang and Chen, Jinyin and Ma, Haonan and Huang, Guohan},
+  title   = {Motif-Backdoor: Rethinking the Backdoor Attack on Graph Neural Networks via Motifs},
+  journal = {IEEE Transactions on Computational Social Systems},
+  year    = {2024},
+  volume  = {11},
+  number  = {2},
+  pages   = {2479--2493},
+  doi     = {10.1109/TCSS.2023.3267094}
+}
+
+@inproceedings{gta2021,
+  author    = {Xi, Zhaohan and Pang, Ren and Ji, Shouling and Wang, Ting},
+  title     = {Graph Backdoor},
+  booktitle = {30th USENIX Security Symposium},
+  year      = {2021},
+  pages     = {1523--1540},
+  url       = {https://www.usenix.org/conference/usenixsecurity21/presentation/xi}
+}
+
+@inproceedings{10.1145/3545948.3545976,
+  author    = {Yang, Shuiqiao and Doan, Bao Gia and Montague, Paul and De Vel, Olivier and Abraham, Tamas and Camtepe, Seyit and Ranasinghe, Damith C. and Kanhere, Salil S.},
+  title     = {Transferable Graph Backdoor Attack},
+  booktitle = {Proceedings of the 25th International Symposium on Research in Attacks, Intrusions and Defenses},
+  year      = {2022},
+  pages     = {321--332},
+  doi       = {10.1145/3545948.3545976}
+}
+
+@inproceedings{dpsba2025,
+  author    = {Wang, Xiaobao and Sun, Ruoxiao and Zhang, Yujun and Feng, Bingdao and He, Dongxiao and Wang, Luzhi and Jin, Di},
+  title     = {Stealthy Yet Effective: Distribution-Preserving Backdoor Attacks on Graph Classification},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2025},
+  volume    = {38},
+  note      = {arXiv:2509.26032}
+}
+
+@inproceedings{eumc2025,
+  author        = {Li, Jiangtong and Liu, Dongyi and Zhu, Kun and Cheng, Dawei and Jiang, Changjun},
+  title         = {Attack by Yourself: Effective and Unnoticeable Multi-Category Graph Backdoor Attacks with Subgraph Triggers Pool},
+  booktitle     = {Advances in Neural Information Processing Systems},
+  year          = {2025},
+  volume        = {38},
+  doi           = {10.52202/085713-2398},
+  eprint        = {2412.17213},
+  archivePrefix = {arXiv}
+}
+
+% ---------- Attacks that leave the topology unchanged ----------
+
+@inproceedings{spear2025,
+  author    = {Ding, Yuanhao and Liu, Yang and Ji, Yugang and Wen, Weigao and He, Qing and Ao, Xiang},
+  title     = {{SPEAR}: A Structure-Preserving Manipulation Method for Graph Backdoor Attacks},
+  booktitle = {Proceedings of the ACM on Web Conference 2025},
+  year      = {2025},
+  pages     = {1237--1247},
+  doi       = {10.1145/3696410.3714665}
+}
+
+@article{spectralba2024,
+  author  = {Zhao, Xiangyu and Wu, Hanzhou and Zhang, Xinpeng},
+  title   = {Effective Backdoor Attack on Graph Neural Networks in Spectral Domain},
+  journal = {IEEE Internet of Things Journal},
+  year    = {2024},
+  volume  = {11},
+  number  = {7},
+  pages   = {12102--12114},
+  doi     = {10.1109/JIOT.2023.3332848}
+}
+
+@article{abarc2025,
+  author  = {Dong, Xuewen and Li, Jiachen and Li, Shujun and You, Zhichao and Qu, Qiang and Kholodov, Yaroslav and Shen, Yulong},
+  title   = {Adaptive Backdoor Attacks With Reasonable Constraints on Graph Neural Networks},
+  journal = {IEEE Transactions on Dependable and Secure Computing},
+  year    = {2025},
+  volume  = {22},
+  number  = {4},
+  pages   = {4053--4069},
+  doi     = {10.1109/TDSC.2025.3543020}
+}
+
+@article{baft2025,
+  author  = {Chen, Yang and Zhou, Bin and Zhao, Haixing},
+  title   = {Stealthy Graph Backdoor Attack Based on Feature Trigger},
+  journal = {Complex \& Intelligent Systems},
+  year    = {2025},
+  volume  = {11},
+  pages   = {325},
+  doi     = {10.1007/s40747-025-01934-5}
+}
+
+% ---------- Graph backdoor attacks: node classification (positioning only) ----------
+
+@inproceedings{ugba2022,
+  author    = {Dai, Enyan and Lin, Minhua and Zhang, Xiang and Wang, Suhang},
+  title     = {Unnoticeable Backdoor Attacks on Graph Neural Networks},
+  booktitle = {Proceedings of the ACM Web Conference 2023},
+  year      = {2023},
+  pages     = {2263--2273},
+  doi       = {10.1145/3543507.3583392}
+}
+
+@inproceedings{dpgba2023,
+  author    = {Zhang, Zhiwei and Lin, Minhua and Dai, Enyan and Wang, Suhang},
+  title     = {Rethinking Graph Backdoor Attacks: A Distribution-Preserving Perspective},
+  booktitle = {Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining},
+  year      = {2024},
+  pages     = {4386--4397},
+  doi       = {10.1145/3637528.3671910}
+}
+
+% ---------- Defenses: pre-training data purification ----------
+
+@article{gsp2025,
+  author  = {Yang, Shuiqiao and Doan, Bao Gia and Montague, Paul and De Vel, Olivier and Abraham, Tamas and Abuadbba, Alsharif and Abbasnejad, Ehsan and Camtepe, Seyit and Ranasinghe, Damith C. and Kanhere, Salil S.},
+  title   = {Graph Spectral Purification for Backdoor Defence in Graph Neural Networks},
+  journal = {World Wide Web},
+  year    = {2025},
+  volume  = {28},
+  pages   = {49},
+  doi     = {10.1007/s11280-025-01364-w}
+}
+
+@inproceedings{mad2025,
+  author    = {Zhao, Rong and Zhang, Jilian and Wang, Yu and Zhang, Yinyan and Weng, Jian},
+  title     = {Sanitizing Backdoored Graph Neural Networks: A Multidimensional Approach},
+  booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence},
+  year      = {2025},
+  pages     = {7949--7957},
+  doi       = {10.24963/ijcai.2025/884}
+}
+
+@inproceedings{tcf2025,
+  author    = {Zhai, Jiecheng and Li, Xuzeng and Wang, Jian and Liu, Jiqiang},
+  title     = {Rethinking Graph Backdoor Defense: A Topological, Coarse-to-Fine Perspective},
+  booktitle = {NeurIPS 2025 Workshop on New Perspectives in Graph Machine Learning},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=zp6tRP3KKa}
+}
+
+% Not peer reviewed -- cite only if the letter needs it, and say so.
+@misc{ssp2026,
+  author = {Hasan, Mohammad Maruf and Wang, Jiayao and Sadik, Shahriar},
+  title  = {{SSP}: Spectral--Structural Purification for Graph Backdoor Defense},
+  year   = {2026},
+  doi    = {10.2139/ssrn.6883122},
+  note   = {SSRN working paper; not peer reviewed}
+}
+
+% ---------- Defenses: training-time robust learning ----------
+
+@inproceedings{rigbd2025,
+  author    = {Zhang, Zhiwei and Lin, Minhua and Xu, Junjie and Wu, Zongyu and Dai, Enyan and Wang, Suhang},
+  title     = {Robustness Inspired Graph Backdoor Defense},
+  booktitle = {The Thirteenth International Conference on Learning Representations},
+  year      = {2025},
+  url       = {https://openreview.net/forum?id=trKNi4IUiP}
+}
+
+@inproceedings{dshield2025,
+  author    = {Yu, Hao and Ma, Chuan and Wan, Xinhang and Wang, Jun and Xiang, Tao and Shen, Meng and Liu, Xinwang},
+  title     = {{DShield}: Defending Against Backdoor Attacks on Graph Neural Networks via Discrepancy Learning},
+  booktitle = {Network and Distributed System Security Symposium},
+  year      = {2025},
+  doi       = {10.14722/ndss.2025.240798}
+}
+
+@inproceedings{losplit2025,
+  author    = {Jin, Di and Zhang, Yuxiang and Feng, Bingdao and Wang, Xiaobao and He, Dongxiao and Wang, Zhen},
+  title     = {{LoSplit}: Loss-Guided Dynamic Split for Training-Time Defense Against Graph Backdoor Attacks},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2025},
+  volume    = {38},
+  doi       = {10.52202/085713-3619}
+}
+
+@inproceedings{a2gbd2026,
+  author    = {Du, Chenxu and Liu, Yang and Yu, Xingtong and Xu, Zhuoer and Liu, Yang and Li, Tianrui},
+  title     = {{A2GBD}: Attack-Agnostic Graph Backdoor Defense},
+  booktitle = {Proceedings of the ACM Web Conference 2026},
+  year      = {2026},
+  pages     = {1229--1239},
+  doi       = {10.1145/3774904.3792507}
+}
+
+% ---------- Defenses: post-training purification ----------
+
+@misc{dmgnn2024,
+  author        = {Sui, Hao and Chen, Bing and Zhang, Jiale and Zhu, Chengcheng and Wu, Di and Lu, Qinghua and Long, Guodong},
+  title         = {{DMGNN}: Detecting and Mitigating Backdoor Attacks in Graph Neural Networks},
+  year          = {2024},
+  eprint        = {2410.14105},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CR},
+  note          = {arXiv preprint}
+}
+
+% ---------- Defenses: inference-time shielding ----------
+
+@inproceedings{graphprot2025,
+  author    = {Yang, Xiao and Lai, Yuni and Zhou, Kai and Li, Gaolei and Li, Jianhua and Zhang, Hang},
+  title     = {{GraphProt}: Certified Black-Box Shielding Against Backdoored Graph Models},
+  booktitle = {Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence},
+  year      = {2025},
+  pages     = {619--627},
+  doi       = {10.24963/ijcai.2025/70}
+}
+
+% ---------- Statistics ----------
+
+@article{holm1979,
+  author  = {Holm, Sture},
+  title   = {A simple sequentially rejective multiple test procedure},
+  journal = {Scandinavian Journal of Statistics},
+  volume  = {6},
+  number  = {2},
+  pages   = {65--70},
+  year    = {1979}
+}
