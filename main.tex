@@ -1,14 +1,12 @@
 %% =====================================================================
-%%  IEEE Signal Processing Letters (SPL) manuscript
-%%  Spectral detection of backdoor triggers in graph neural networks
+%%  Manuscript: spectral detection of backdoor triggers in graph neural
+%%  networks
 %%
-%%  Class : IEEEtran.cls v1.8b (official IEEE class, supplied by the TeX distribution)
-%%  Build : tectonic -X compile main.tex --outdir build
-%%          or: pdflatex main && bibtex main && pdflatex main && pdflatex main
+%%  Class : IEEEtran.cls (journal option; used as a generic two-column
+%%          layout, not tied to a particular venue)
+%%  Build : pdflatex main && bibtex main && pdflatex main && pdflatex main
 %%
 %%  ---------------------------------------------------------------------
-%%  Historical writing guide PAPER_MEMORY.md is not present in this checkout.
-%%
 %%  SOURCE MAP (which document owns which section):
 %%    progress_report.tex -> background, motivation, attack taxonomy and
 %%                           terminology, related work, citation pool
@@ -31,7 +29,7 @@
 %%      'Avg. deg.' is the mean over graphs of 2|E|/n.
 %%    results/analysis/paper_graph_20260930_logreg
 %%      logistic-regression ROC-AUC, same arm and rows.
-%%  The pre-revision text is kept in main_before_revision.tex.
+%%  The pre-revision text is available in the git history.
 %%
 %%  THE ARGUMENT (one chain, not a chronology):
 %%    trigger insertion -> change in the normalized-Laplacian descriptor
@@ -42,11 +40,6 @@
 %%  Intermediate detectors from the reports are development history and
 %%  supporting evidence, not competing proposed methods. The MLP-based
 %%  spectral detector is the proposed method.
-%%  ---------------------------------------------------------------------
-%%
-%%  SPL length rules: 4 pages of technical content; a 5th page is allowed
-%%  for References only. Author biographies/photographs are not permitted.
-%%  Do NOT change margins, font sizes, column widths or line spacing.
 %% =====================================================================
 \RequirePackage[T1]{fontenc}
 \documentclass[journal]{IEEEtran}
@@ -54,13 +47,13 @@
 % ---------------------------------------------------------------------
 % Packages -- keep this list minimal; add only what the paper really uses
 % ---------------------------------------------------------------------
-\usepackage{cite}                       % IEEE-style [1]-[3] range compression
+\usepackage{cite}                       % [1]-[3] range compression
 \usepackage{amsmath,amssymb,amsfonts}   % equations and math symbols
 \usepackage{graphicx}                   % figures
 \usepackage{booktabs}                   % \toprule / \midrule / \bottomrule
 \usepackage{tabularx}                   % Y columns in the configuration table
+\usepackage{multirow}                   % attack-independent cells in Table II
 \usepackage{url}
-\usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}        % keep last
 
 \graphicspath{{figures/}}
@@ -76,43 +69,66 @@
 }
 
 % ---------------------------------------------------------------------
-% Notation macros -- one symbol per quantity
+% Notation macros -- one symbol per quantity.
+% Bold upright: matrices and vectors. Italic: scalars. Calligraphic: sets.
 % ---------------------------------------------------------------------
 \newcommand{\bA}{\mathbf{A}}            % adjacency matrix
 \newcommand{\bD}{\mathbf{D}}            % degree matrix
 \newcommand{\bX}{\mathbf{X}}            % node feature matrix
 \newcommand{\bL}{\mathbf{L}}            % normalized Laplacian
+\newcommand{\bI}{\mathbf{I}}            % identity matrix
+\newcommand{\bu}{\mathbf{u}}            % eigenvector of L
 \newcommand{\bs}{\mathbf{s}}            % spectral descriptor
+\newcommand{\blam}{\boldsymbol{\lambda}}% spectrum (vector of eigenvalues)
 \newcommand{\calV}{\mathcal{V}}         % node set
 \newcommand{\calE}{\mathcal{E}}         % edge set
-\newcommand{\calD}{\mathcal{D}}         % dataset
-\newcommand{\calL}{\mathcal{L}}         % training loss
-\newcommand{\fth}{f_{\theta}}           % GNN model with parameters theta
+\newcommand{\calG}{\mathcal{G}}         % space of attributed graphs
+\newcommand{\calC}{\mathcal{C}}         % label set
+\newcommand{\calD}{\mathcal{D}}         % training set
+\newcommand{\calR}{\mathcal{R}}         % clean reference set
 
 \newtheorem{definition}{Definition}
 
 \begin{document}
 
 % Note on wording: "attack-agnostic", used in the progress report, is
-% deliberately avoided -- the learned detector is trained and tested on the
-% same attack, and cross-attack generalization is not addressed here.
+% deliberately avoided for the proposed detector -- it is trained and tested
+% on the same attack, and cross-attack generalization is not addressed here.
 \title{On the Imperceptibility of Graph Backdoor Trojans\\ in Spectral Domain}
 
-% TODO: authors, IEEE membership grades, affiliations, funding note.
-% Check the SPL submission policy for the current review cycle before
-% filling this in (anonymized vs. non-anonymized submission).
+% TODO: authors, affiliations, funding note (check the target venue's
+% policy on anonymized vs. non-anonymized submission).
 \author{TODO: Author Names%
 \thanks{TODO: submission date, funding and sponsor acknowledgment.}%
 \thanks{TODO: author affiliations, addresses and e-mail addresses.}}
 
-% Running head; short author form on the right, e.g. "Author \MakeLowercase{\textit{et al.}}: Short Title"
-\markboth{IEEE Signal Processing Letters}%
+\markboth{}%
 {TODO: Author \MakeLowercase{\textit{et al.}}: TODO Short Title}
 
 \maketitle
 
 \begin{abstract}
-
+Backdoor attacks on graph classification implant a hidden behavior through
+poisoned training graphs: the trained model classifies clean graphs normally
+but assigns graphs that carry an attacker's trigger to a target class. To
+avoid detection, attacks keep triggers small, so that poisoned graphs resemble
+clean ones. This paper asks whether structural triggers also remain
+imperceptible in the spectral domain, that is, whether the normalized-Laplacian
+spectrum of an individual triggered graph can be distinguished from the spectra
+of clean graphs. Each graph is summarized by a fixed-length descriptor of its
+spectrum, which makes graphs of different sizes comparable. Two detectors are
+built on this descriptor: a clean-reference statistical test, which asks
+whether a graph deviates from the natural variation of clean spectra, and a
+multilayer perceptron (MLP) trained on labelled clean and triggered spectra. On
+four benchmarks with three structural attacks against a graph convolutional
+network, the statistical test flags most triggered graphs only on MUTAG and for
+one attack on AIDS, whereas the MLP reaches ROC-AUC values of $0.84$--$1.00$.
+Rejecting the graphs flagged by the MLP removes nearly all success of a learned
+trigger on the three molecular benchmarks while rejecting fewer than $10\%$ of
+clean graphs; on PROTEINS, substantial attack success remains. Because the MLP
+is trained on examples of the attack it detects, these results measure how much
+the spectrum reveals about a known attack rather than the performance of a
+defense against unseen attacks.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -130,506 +146,394 @@ introduced through poisoned training data~\cite{sba2021,gta2021}. In graph
 classification, an attacker embeds a trigger in selected training graphs and
 relabels them with an attacker-chosen target class. The trained model then
 behaves normally on clean graphs but assigns triggered graphs to the target
-class. Consequently, clean-test accuracy alone cannot establish the absence of
-backdoor behavior.
+class. Consequently, high accuracy on clean test data cannot establish that a
+model is free of a backdoor.
 
-Many attacks try to keep triggers imperceptible: the attacker limits how much a
-trigger may alter a graph, so that poisoned graphs resemble clean ones
-(Section~\ref{sec:policy}), and some attacks, such as
-DPSBA~\cite{dpsba2025}, constrain the structural and semantic deviations of
-poisoned graphs explicitly. This letter asks whether structural triggers remain
-imperceptible in the spectral domain, that is, whether the normalized-Laplacian
-spectrum of a triggered graph can be told apart from those of clean graphs;
-detectability is thus the converse of imperceptibility. Inserting a trigger
-rewires edges, which can move the eigenvalues of the normalized graph
-Laplacian~\cite{chung1997spectral}. The question is whether these changes are
-consistent enough to distinguish individual triggered graphs from clean ones.
+To avoid detection, attacks keep triggers imperceptible: they limit how much a
+trigger may change a graph, so that poisoned graphs resemble clean ones, and
+some attacks, such as DPSBA~\cite{dpsba2025}, explicitly constrain the
+structural and semantic deviation of poisoned graphs. The attacks evaluated in
+this paper, for example, confine the trigger to four nodes of the graph. A
+structural trigger nevertheless rewires edges, and the eigenvalues of the
+normalized graph Laplacian summarize how a graph is
+connected~\cite{chung1997spectral}. A rewiring that is small in the graph may
+therefore still leave a trace in its spectrum. This paper asks whether
+structural triggers remain imperceptible in the spectral domain: can the
+spectrum of an individual triggered graph be distinguished from the spectra of
+clean graphs?
 
-The evaluation proceeds in three steps. First, a statistical test compares the
-spectrum of each graph with the variation among clean graphs, to determine
-whether trigger-induced changes exceed this natural variation. Second, a
-multilayer perceptron (MLP) trained on labelled clean and triggered spectra
-tests whether the spectrum as a whole supports individual-graph detection.
-Third, graphs flagged by either detector are rejected before they reach the
-target model, and the remaining attack success is measured. The MLP threshold
-is set on held-out clean graphs so that the two detectors operate at
-approximately the same cost on clean graphs.
+We answer this question in three steps, each building on the previous one.
+First, a statistical test compares the spectrum of each graph with the
+variation among clean graphs and asks whether the changes caused by a trigger
+exceed this natural variation. Second, a multilayer perceptron (MLP) trained on
+labelled clean and triggered spectra asks whether the spectrum as a whole
+separates individual triggered graphs from clean ones, even where no single
+spectral feature does. Third, graphs flagged by either detector are rejected
+before they reach the trained target model, and we measure how much attack
+success remains. Throughout, both detectors are compared at approximately the
+same rate of rejected clean graphs.
 
-The contributions are: (i) an assessment, through a clean-reference test, of
-whether the normalized-Laplacian changes induced by structural backdoor
-triggers exceed the natural spectral variation among clean graphs; (ii) a
-spectrum-only MLP detector for individual graphs that requires no access to
-the target model at inference; and (iii) an evaluation of how rejecting
-detected graphs affects attack success while retaining clean inputs.
+The contributions are: (i) a clean-reference test of whether the changes in the
+normalized-Laplacian spectrum caused by structural backdoor triggers exceed the
+natural spectral variation among clean graphs; (ii) a spectrum-only MLP
+detector for individual graphs that requires no access to the target model;
+and (iii) an evaluation of how rejecting detected graphs affects attack
+success. On four benchmarks, the MLP separates triggered from clean graphs far
+better than the statistical test, and rejecting the graphs it flags nearly
+eliminates the learned trigger on three of them; on the fourth, a substantial
+part of the attack success remains.
 
-% =====================================================================
-\section{Related Work}
-Structural graph backdoors differ in how triggers are constructed and
-inserted. The subgraph-based backdoor attack (SBA) uses a reusable
-random-graph template~\cite{sba2021}, while Motif-Backdoor employs motif-based
-templates with model-guided placement~\cite{motif}. The placement
-strategy may depend on the host graph even when the trigger structure
-itself remains fixed. In contrast, the graph Trojan attack (GTA) constructs
-graph-specific triggers using a learned generator~\cite{gta2021}, while TRAP uses
-gradient-guided edge perturbations~\cite{10.1145/3545948.3545976}.
-
-Backdoor attacks also differ in the graph components they perturb.
-DPSBA constrains structural and semantic deviations through
-distribution-aware clean-label poisoning~\cite{dpsba2025}. Other
-attacks operate primarily on node features: SPEAR preserves graph
-topology~\cite{spear2025}, while spectral-domain attacks embed triggers
-in the spectral coefficients of node-feature
-signals~\cite{spectralba2024}. Because such feature-only attacks leave
-the adjacency matrix unchanged, they also leave the normalized
-Laplacian spectrum unchanged. They therefore fall outside the scope of
-the structural detector considered here.
-
-Existing graph backdoor defenses differ substantially in their access
-requirements. GSP purifies training graphs using spectral low-pass
-filtering~\cite{gsp2025}, while RIGBD~\cite{rigbd2025} and
-DShield~\cite{dshield2025} inspect potentially poisoned training data
-and intervene during training. DMGNN relies on model-dependent
-counterfactual explanations for trigger pruning~\cite{dmgnn2024},
-whereas GraphProt avoids access to model internals but requires
-repeated classifier queries over sampled subgraphs~\cite{graphprot2025}.
-The SSP working paper combines feature-covariance eigenanalysis with
-neighborhood feature deviations~\cite{ssp2026}, rather than the adjacency
-Laplacian eigenvalues studied here. A2GBD uses active node selection and
-reinforcement learning for attack-agnostic defense~\cite{a2gbd2026}.
-The proposed detector operates directly on the normalized
-Laplacian spectrum of an incoming graph. Once trained on labelled clean
-and triggered spectra, the MLP requires neither the target's training
-set nor access to its parameters, gradients, or internal
-representations, and it does not require querying the target for
-detection. The detector therefore acts as a pre-inference filter rather
-than modifying the input graph or retraining the target.
+Section~\ref{sec:related} reviews related attacks and defenses.
+Section~\ref{sec:prelim} introduces the notation, the backdoor threat model,
+the structural triggers, and the spectral representation of a graph.
+Section~\ref{sec:fingerprint} presents the two detectors, and
+Section~\ref{sec:numerical} reports the experiments.
 
 % =====================================================================
-\section{Preliminaries and Problem Formulation}
+\section{Related Work}\label{sec:related}
+Structural graph backdoors differ in how their triggers are constructed. The
+subgraph-based backdoor attack (SBA) inserts a reusable random-graph
+template~\cite{sba2021}, and Motif-Backdoor inserts a motif at host nodes
+chosen with the help of a model~\cite{motif}. In both, the trigger pattern is
+fixed, although its placement may depend on the host graph. The graph Trojan
+attack (GTA) instead learns a generator that produces a graph-specific
+trigger~\cite{gta2021}, and TRAP perturbs edges guided by
+gradients~\cite{10.1145/3545948.3545976}.
+
+Backdoor attacks also differ in which parts of the graph they perturb. DPSBA
+constrains the structural and semantic deviation of poisoned graphs through
+distribution-aware clean-label poisoning~\cite{dpsba2025}. Other attacks leave
+the structure untouched and perturb only node features: SPEAR preserves the
+topology~\cite{spear2025}, and spectral-domain attacks embed the trigger in the
+spectral coefficients of node-feature signals~\cite{spectralba2024}. Since such
+feature-only attacks leave the adjacency matrix unchanged, they also leave the
+normalized-Laplacian spectrum unchanged and are outside the scope of this
+paper.
+
+Existing graph backdoor defenses differ mainly in what they need access to.
+GSP purifies training graphs by spectral low-pass filtering~\cite{gsp2025},
+and RIGBD~\cite{rigbd2025} and DShield~\cite{dshield2025} inspect the possibly
+poisoned training data and intervene during training. DMGNN prunes triggers
+using counterfactual explanations of the model~\cite{dmgnn2024}, and GraphProt
+avoids access to model internals but queries the classifier repeatedly on
+sampled subgraphs~\cite{graphprot2025}. A2GBD combines active node selection
+with reinforcement learning to avoid assumptions about the
+attack~\cite{a2gbd2026}. SSP also relies on an eigenanalysis, but of the
+feature covariance and combined with neighborhood feature
+deviations~\cite{ssp2026}, not of the graph Laplacian. The detector studied
+here needs less: it reads only the normalized-Laplacian spectrum of an
+incoming graph. Once trained, it requires neither the training set of the
+target model nor its parameters, gradients, or outputs, and it neither
+modifies the input graph nor retrains the model; it acts as a filter in front
+of the model. Its training, however, requires triggered examples of the
+attack, a requirement discussed in Section~\ref{sec:mlp}.
+
+% =====================================================================
+\section{Preliminaries and Problem Formulation}\label{sec:prelim}
 
 \subsection{Graph Classification}
-A graph is $G=(\calV,\calE,\bX)$ with $n=|\calV|$ nodes, adjacency matrix
-$\bA\in\{0,1\}^{n\times n}$, degree matrix $\bD$ and node features
-$\bX$. A graph classifier $\fth$ with parameters $\theta$ maps $G$ to a vector
-of class probabilities.
-\subsection{Holm Procedure}
-Multiplicity control throughout this letter uses the Holm step-down
-procedure~\cite{holm1979}; each family of hypotheses consists of the
-coordinatewise tests of a single graph (Section~\ref{sec:stat}).
-\begin{definition}[Holm Step-Down Procedure]
-Consider $m$ null hypotheses $H_1,\dots,H_m$ with corresponding valid
-$p$-values $p_1,\dots,p_m$. Let
-\[
-  p_{(1)}\leq p_{(2)}\leq\dots\leq p_{(m)}
-\]
-denote the ordered $p$-values, and let $H_{(i)}$ be the hypothesis associated
-with $p_{(i)}$. For a prescribed family-wise significance level
-$\alpha\in(0,1)$, define
-\begin{equation}
-  \ell^{*}=\max\Bigl(\{0\}\cup\bigl\{\ell\in\{1,\dots,m\}:\,
-  p_{(i)}\leq\tfrac{\alpha}{m-i+1}\ \,\forall i\leq \ell\bigr\}\Bigr).
-  \label{eq:holm-step-down}
-\end{equation}
-The procedure rejects $H_{(1)},\dots,H_{(\ell^{*})}$. Thus, testing starts with
-the smallest $p$-value and stops at the first failed comparison; that
-hypothesis and all subsequent hypotheses are not rejected.
+A graph $G=(\calV,\calE,\bX)$ has $n=|\calV|$ nodes, an edge set $\calE$, an
+adjacency matrix $\bA\in\{0,1\}^{n\times n}$, a diagonal degree matrix $\bD$
+whose entry $d_v$ is the number of neighbors of node $v$, and a feature matrix
+$\bX$ whose row $\mathbf{x}_v$ is the feature vector of node $v$. Let $\calG$
+be the set of such graphs and $\calC$ a set of $C$ class labels. A graph
+classifier $f_\theta\colon\calG\to\Delta^{C-1}$ with parameters $\theta$ maps a
+graph to a vector of class probabilities, where $\Delta^{C-1}$ is the set of
+probability vectors of length $C$, and predicts the label
+$h_\theta(G)=\arg\max_{c\in\calC} f_{\theta,c}(G)$.
 
-Equivalently, the Holm-adjusted $p$-value for $H_{(i)}$ is
-\begin{equation}
-  p^{\mathrm{Holm}}_{(i)}
-  =\min\left\{
-    1,\;
-    \max_{1\leq t\leq i}
-    \left[(m-t+1)\,p_{(t)}\right]
-  \right\}.
-  \label{eq:holm-adjusted}
-\end{equation}
-A hypothesis is rejected when its adjusted $p$-value does not exceed $\alpha$.
-For valid input $p$-values, this procedure controls the probability of
-rejecting at least one true null hypothesis at level $\alpha$, without
-requiring independence among the tests.
-\end{definition}
+\subsection{Holm Procedure}\label{sec:holm}
+The statistical detector of Section~\ref{sec:stat} tests each graph at many
+coordinates of its spectral descriptor at once. Even for a clean graph, some of
+these tests would reject by chance, so the tests of one graph are corrected for
+multiplicity with Holm's step-down procedure~\cite{holm1979}. Given $m$
+$p$-values sorted in increasing order, the procedure compares the smallest with
+$\alpha/m$, the second smallest with $\alpha/(m-1)$, and so on, and rejects the
+hypotheses up to the first comparison that fails. For valid $p$-values, the
+probability of rejecting at least one true hypothesis is then at most $\alpha$,
+without requiring the tests to be independent. In this paper, only whether a
+graph has at least one rejection matters. This is decided by the first
+comparison alone: some hypothesis is rejected exactly when the smallest
+$p$-value is at most $\alpha/m$, and the smallest Holm-adjusted $p$-value is
+$m$ times the smallest $p$-value, capped at $1$.
+
 \subsection{Backdoor Trojan}
-\subsubsection{Basics of a Backdoor Trojan }
+\subsubsection{Basics of a Backdoor Trojan}
 A backdoor Trojan (backdoor, for short) is a hidden behavior implanted in a
 model through poisoned training data and activated by a trigger, a pattern
-the attacker inserts into an input graph.
+that the attacker inserts into an input graph. The attacker describes the
+insertion by a trigger policy $T\colon\calG\times\calC\to\calG$, which maps a
+graph $G$ and a target label $y_t\in\calC$ to the triggered graph
+$\tilde G=T(G,y_t)$.
 
-\begin{definition}[Backdoor Attack]
-Let $\mathcal{X}$ be the space of attributed graphs, let $\mathcal{C}$ be a
-finite label set with $C=|\mathcal{C}|$, and let $\mathcal{P}$ be a
-distribution over $\mathcal{X} \times \mathcal{C}$. Let
-$f_\theta : \mathcal{X} \to \Delta^{C-1}$ be a model trained on a sample from
-$\mathcal{P}$, and write
-$h_\theta(G)=\arg\max_{c\in\mathcal{C}} f_{\theta,c}(G)$ for its predicted
-label. Let $y_t \in \mathcal{C}$ be a fixed target label and let
-$T : \mathcal{X} \times \mathcal{C} \to \mathcal{X}$ be a trigger policy, so
-that $T(G,y_t)$ is the triggered version of $G$. For tolerances
-$\delta_a,\delta_c \in [0,1)$, a backdoor attack produces a poisoned model
-$f_{\theta^*}$ such that
+\begin{definition}[Backdoor attack]
+Let $\mathcal{P}$ be a distribution over $\calG\times\calC$, let $f_\theta$ be a
+classifier trained on clean samples from $\mathcal{P}$, and let
+$\delta_a,\delta_c\in[0,1)$ be tolerances. A backdoor attack with target label
+$y_t$ and trigger policy $T$ produces a poisoned classifier $f_{\theta^*}$ that
+satisfies
 \begin{align*}
 \Pr_{(G,y)\sim\mathcal{P}}\bigl[\,h_{\theta^*}\bigl(T(G,y_t)\bigr)=y_t
   \;\big|\; y\neq y_t \,\bigr] &\ \ge\ 1-\delta_a,\\
 \Pr_{(G,y)\sim\mathcal{P}}\bigl[\,h_{\theta^*}(G)=h_{\theta}(G)\,\bigr]
   &\ \ge\ 1-\delta_c .
 \end{align*}
-The first condition is the backdoor behaviour on triggered inputs and the
-second is preservation of clean behaviour; $\delta_a=\delta_c=0$ recovers the
-idealized deterministic case.
-\end{definition}
-
-\begin{definition}[Clean Accuracy]
-Let $\mathcal{D}_{\text{test}}$ be a held-out test set, disjoint from the
-training set $\mathcal{D}$, and let $\Pr_{(G,y)\sim\mathcal{D}_{\text{test}}}$
-denote the empirical probability over it. The accuracy of $f_{\theta^*}$ on
-clean, untriggered inputs is
-\[
-\mathrm{CA} = \Pr_{(G,y) \sim \mathcal{D}_{\text{test}}}\!\left[h_{\theta^*}(G) = y\right].
-\]
-\end{definition}
-
-\begin{definition}[Attack Success Rate]
-The rate at which triggered inputs are mapped to the target label $y_t$:
-\[
-\mathrm{ASR} = \Pr_{(G,y) \sim \mathcal{D}_{\text{test}}}\!\left[h_{\theta^*}(T(G,y_t)) = y_t \;\middle|\; y\neq y_t\right].
-\]
-\end{definition}
-
-\subsubsection{Backdoor Insertion Framework}\label{sec:policy}
-
-The common backdoor attack framework consists of three stages~\cite{sba2021,gta2021}: (1)
-trigger-insertion policy design, where the attacker constructs or learns $T$;
-(2) data poisoning, where $T$ is applied to a subset of the training data to
-build a poisoned dataset $\widetilde{\mathcal{D}}$; and (3) model poisoning,
-where a (possibly third-party) model is trained on $\widetilde{\mathcal{D}}$,
-implanting the backdoor.
-
-Let $f_\theta : \mathcal{X} \to \Delta^{C-1}$ be the target model and
-$\mathcal{D} = \{(G_i, y_i)\}_{i=1}^{N}$, drawn i.i.d.\ from $\mathcal{P}$,
-the clean training set.
-
-\paragraph{Trigger-Insertion Policy Design}
-The attacker defines a policy $T : \mathcal{X} \times \mathcal{C} \to
-\mathcal{X}$. $T$ may be non-parametric (e.g., solved per
-instance) or restricted to a parametric family
-$\{T_\phi\}_{\phi\in\mathcal{W}}$, i.e.\ the collection of policies obtained as the
-generator weights $\phi$ range over the generator weight space $\mathcal{W}$, learned once
-and reused at inference. Given a surrogate $f_{\hat\theta}$,
-\begin{align}
-T^* = \arg\max_{T} \; & \frac{1}{N}\sum_{i=1}^{N} \mathbf{1}\bigl[h_{\hat\theta}(T(G_i,y_t))=y_t\bigr] \notag \\
-\text{s.t.} \; & d\big(T(G_i,y_t), G_i\big) \le \epsilon, \quad i=1,\dots,N,
-\end{align}
-where $d$ is a distortion measure and $\epsilon$ bounds perceptibility.
-
-For $T = T_\phi$, i.e. $T$ is realized by a neural network with weights $\phi
-\in \mathcal{W}$, the search over policies reduces to optimizing $\phi$:
-\begin{align}
-\phi^* = \arg\max_{\phi \in \mathcal{W}} \; & \frac{1}{N}\sum_{i=1}^{N} \mathbf{1}\bigl[h_{\hat\theta}(T_\phi(G_i,y_t))=y_t\bigr] \notag \\
-& - \; \frac{\gamma}{N}\sum_{i=1}^{N} d\bigl(T_\phi(G_i,y_t), G_i\bigr),
-\label{eq:phi-star}
-\end{align}
-with the averaged distortion as a soft penalty replacing the hard constraint.
-The indicator above is not differentiable in $\phi$, so it is relaxed to the
-cross-entropy surrogate $\mathcal{L}_{\mathrm{CE}}(\cdot,y_t)$, which is small
-exactly when $f_{\hat\theta}$ concentrates its mass on $y_t$. Since
-$f_{\hat\theta}$ and $T_\phi$ are differentiable, $\phi$ is then trained by
-gradient descent on this surrogate:
-\begin{align}
-\mathcal{J}(\phi) &= \frac{1}{N}\sum_{i=1}^{N} \Big[ \mathcal{L}_{\mathrm{CE}}\big(f_{\hat\theta}(T_\phi(G_i,y_t)), y_t\big) \notag \\
-&\qquad\qquad + \gamma \, d\big(T_\phi(G_i,y_t), G_i\big) \Big], \\
-\phi &\leftarrow \phi - \eta \nabla_\phi \mathcal{J}(\phi).
-\end{align}
-This amortizes trigger construction: $\phi^*$ is learned once over
-$\mathcal{D}$, and $T_{\phi^*}(G, y_t)$ is then generated in one forward pass
-for any new $(G, y_t)$, rather than solving a fresh optimization per pair.
-
-\paragraph{Data Poisoning}
-For poisoning rate $\rho \in (0,1)$, $\mathcal{D}_p \subset \mathcal{D}$,
-$|\mathcal{D}_p| = \lfloor\rho N\rfloor$,
-\begin{align}
-\mathcal{D}_p' &= \big\{ (T^*(G, y_t), y_t) \mid (G,y) \in \mathcal{D}_p \big\}, \\
-\widetilde{\mathcal{D}} &= (\mathcal{D} \setminus \mathcal{D}_p) \cup \mathcal{D}_p'.
-\end{align}
-The attacker aims to preserve clean accuracy while increasing attack success;
-this tradeoff is evaluated empirically.
-
-\paragraph{Model Poisoning}
-The target model's owner trains on $\widetilde{\mathcal{D}}$ as released,
-without attacker control:
-\begin{equation}
-\theta^* = \arg\min_{\theta} \; \frac{1}{|\widetilde{\mathcal{D}}|} \sum_{(G,y) \in \widetilde{\mathcal{D}}} \mathcal{L}\big(f_\theta(G), y\big),
-\end{equation}
-where $\mathcal{L}$ is the training loss.
-
-\subsection{Trigger Insertion in Graphs}\label{sec:insertion}
-A trigger can either inject new nodes or modify existing host nodes. Let
-$\calV_g$ be the placed trigger nodes, $\calE_g$ the inserted edges (including any
-links to the host), and $\calE_{\mathrm{cut}}\subseteq\calE$ the removed edges.
-Writing $\mathbf{x}^{g}_v$ for the assigned feature row at a trigger node,
-the general composition is
-\begin{align}
-\tilde{\calV} &= \calV\cup\calV_g, \label{eq:subgraph-node-composition}\\
-\tilde{\calE} &= (\calE\setminus\calE_{\mathrm{cut}})\cup\calE_g,
-\label{eq:subgraph-edge-composition}\\
-\tilde{\mathbf{x}}_v &=
-\begin{cases}
-\mathbf{x}^{g}_v, &v\in\calV_g,\\
-\mathbf{x}_v, &v\in\calV\setminus\calV_g.
-\end{cases}\label{eq:subgraph-feature-composition}
-\end{align}
-Consequently,
-\begin{equation}
-|\tilde{\calV}|=|\calV|+|\calV_g\setminus\calV|.
-\label{eq:subgraph-node-count}
-\end{equation}
-Node-injection attacks use $\calV_g\cap\calV=\varnothing$, as in
-UGBA~\cite{ugba2022} and DPGBA~\cite{dpgba2023}. In contrast, all three
-graph-classification attacks evaluated here select existing nodes,
-$\calV_g\subseteq\calV$, and preserve the vertex count. Their nominal trigger
-size $k=|\calV_g|$ is given in Table~\ref{tab:setup}.
-
-\subsubsection{Static Triggers}
-\label{sec:static}
-A static trigger uses a fixed pattern $\Gamma=(\calV_\Gamma,\calE_\Gamma)$ and a
-placement map $\iota_\pi:\calV_\Gamma\to\calV$ selected by a policy $\pi$. For
-the SBA and Motif implementations evaluated here,
-$\calV_g=\iota_\pi(\calV_\Gamma)$ and
-\begin{equation}
-T(G,y_t)=\bigl(\calV,\,(\calE\setminus\calE[\calV_g])\cup\iota_\pi(\calE_\Gamma),\,\bX\bigr),
-\label{eq:static-trigger}
-\end{equation}
-where $\calE[\calV_g]$ contains the edges with both endpoints in $\calV_g$, and
-$\iota_\pi(\calE_\Gamma)$ maps pattern edges to those hosts. Edges within the
-selected region are replaced; external connections and features are preserved.
-In the notation of~\eqref{eq:subgraph-node-composition}--\eqref{eq:subgraph-feature-composition},
-this sets $\calE_{\mathrm{cut}}=\calE[\calV_g]$, $\calE_g=\iota_\pi(\calE_\Gamma)$,
-and $\mathbf{x}^{g}_v=\mathbf{x}_v$.
-
-SBA uses an Erd\H{o}s--R\'enyi pattern~\cite{sba2021}; our implementation
-places it on uniformly sampled host nodes. Motif-Backdoor uses motif
-structure with model-guided placement~\cite{motif}. Here the motif is M44, a
-four-node triangle with a tail, and high-degree candidates are ranked by the
-change in surrogate logits when their incident edges are removed. The pattern is
-fixed, but its spectral effect can vary with host topology and placement.
-
-\subsubsection{Dynamic Triggers}
-\label{sec:dynamic}
-A dynamic policy $T_\phi$ generates perturbations conditioned on the host.
-The evaluated GTA implementation selects a region $\calV_g\subseteq\calV$ and
-uses topology and feature generators~\cite{gta2021}:
-\begin{equation}
-\begin{aligned}
-\tilde{\bA}&=\max\bigl(\bA,\,\bA_\phi(G)\bigr),\\
-\tilde{\bX}&=\bX+\bX_\phi(G).
-\end{aligned}
-\label{eq:dynamic-trigger}
-\end{equation}
-The generated adjacency matrix $\bA_\phi(G)$ is binarized and masked to pairs
-inside $\calV_g$, and the maximum is taken entrywise; the feature perturbation
-$\bX_\phi(G)$ is masked to the rows of $\calV_g$. Thus GTA adds edges within
-the selected region and changes features, while keeping $\tilde{\calV}=\calV$.
-In the notation of~\eqref{eq:subgraph-node-composition}--\eqref{eq:subgraph-feature-composition},
-$\calE_{\mathrm{cut}}=\varnothing$, $\calE_g$ holds the generated edges, and
-$\mathbf{x}^{g}_v$ is the perturbed feature row of a node of $\calV_g$. The
-region selection itself is not learned. The general optimization framework in
-Section~\ref{sec:policy} is a surrogate objective, not a guarantee that a
-hard distortion bound is satisfied. Related imperceptibility objectives
-include distribution-aware poisoning in DPSBA~\cite{dpsba2025} and
-feature-only perturbations in SPEAR~\cite{spear2025}; these are distinct
-attack mechanisms.
-
-\subsection{Graphs in Spectral Domain}\label{sec:spectral}
-
-\begin{definition}[Normalized Laplacian Spectrum]
-For a graph $G=(\calV,\calE,\bX)$ with adjacency matrix $\bA$ and degree matrix
-$\bD$, the normalized Laplacian is
-\[
-\bL = \mathbf{I} - \bD^{-1/2}\bA\bD^{-1/2}.
-\]
-For isolated nodes, the corresponding entry of $\bD^{-1/2}$ is
-set to zero, so each contributes an eigenvalue of $1$. The eigenvalues of
-$\bL$,
-\[
-\boldsymbol{\lambda}(G)=[\lambda_1,\dots,\lambda_n]^{\top},
-\qquad
-0\le\lambda_1\le\lambda_2\le\dots\le\lambda_n\le 2,
-\]
-are referred to as the spectrum of $G$. The spectrum is invariant to node
-ordering and bounded independently of graph size~\cite{chung1997spectral},
-which is what allows graphs to be compared without aligning their nodes.
-\end{definition}
-
-Following graph signal processing~\cite{shuman2013gsp}, the eigenvectors of
-$\bL$ serve as the oscillation modes of the graph and the eigenvalues as their
-frequencies. An eigenvector assigns a value to every node, and its eigenvalue
-measures how strongly these values, scaled by the square root of the node
-degree, differ across the edges of the graph~\cite{chung1997spectral}.
-
-Low frequencies, the small eigenvalues, belong to eigenvectors that change
-slowly across edges, so that connected nodes receive similar values. The
-number of zero eigenvalues equals the number of connected components that
-contain at least one edge, because each such component carries one
-eigenvector that is perfectly smooth on it. For a connected graph, a small
-nonzero $\lambda_2$ indicates a bottleneck: the graph can be split into two
-sizeable parts by removing comparatively few edges~\cite{chung1997spectral}.
-High frequencies, the large eigenvalues, belong to eigenvectors whose values
-alternate between neighboring nodes. The largest possible value, $2$, occurs
-exactly when a connected component with an edge is bipartite, that is, when
-its nodes can be divided into two groups such that every edge joins the two
-groups~\cite{chung1997spectral}.
-
-The spectrum does not determine a graph uniquely, but it summarizes how the
-graph is connected: how many separate pieces it has, whether it has a
-bottleneck, and whether it is bipartite. A trigger rewires edges among a few
-nodes (Section~\ref{sec:insertion}), which may change this connectivity and
-with it some eigenvalues.
-
-The spectrum of a graph on $n$ vertices is a vector of length $n$, so the
-spectra of two graphs of different order live in spaces of different
-dimension and cannot be compared coordinatewise. Two devices remove this
-dependence on size: the eigenvalues are reindexed by their \emph{relative}
-position in the spectrum, and the resulting profile is resampled on a grid
-that is shared by all graphs.
-
-\begin{definition}[Normalized Spectral Profile]
-Let $G$ be a graph on $n\ge 2$ vertices with spectrum $\boldsymbol{\lambda}(G)$.
-Assign to each eigenvalue the normalized position
-\begin{equation}
-r_i=\frac{i-1}{n-1},\qquad i=1,\dots,n,
-\label{eq:rindex}
-\end{equation}
-so that $r_1=0$ and $r_n=1$ irrespective of $n$. The \emph{spectral
-profile} of $G$ is the unique piecewise-linear function
-$\Lambda_G\colon[0,1]\to[0,2]$ with breakpoints $r_1,\dots,r_n$ satisfying
-$\Lambda_G(r_i)=\lambda_i$.
-\end{definition}
-
-Between two breakpoints, the profile interpolates linearly between
-consecutive eigenvalues, so it is nondecreasing and takes values in $[0,2]$.
-In effect, $\Lambda_G$ retains the \emph{shape} of the spectrum while
-discarding its length: the horizontal axis measures how far one has advanced
-through the spectrum rather than how many eigenvalues there are.
-
-Graphs of different order are compared on a shared grid of $K$ equally spaced
-positions $j/K$, $j=1,\dots,K$. The position $0$ is omitted, since
-$\Lambda_G(0)=\lambda_1$ equals zero for every graph with an edge and
-therefore carries no information. Reading the profile on this grid gives the
-spectral descriptor
-\begin{equation}
-\bs(G)=\Bigl[\Lambda_G\bigl(1/K\bigr),\,
-\Lambda_G\bigl(2/K\bigr),\,\dots,\,
-\Lambda_G\bigl(1\bigr)\Bigr]^{\!\top}\!\in[0,2]^{K},
-\label{eq:specvec}
-\end{equation}
-whose $j$th coordinate is denoted $s_j(G)$ and whose last entry is
-$\Lambda_G(1)=\lambda_n$. The map $G\mapsto\bs(G)$ sends every graph on at
-least two vertices into the same $K$-dimensional space, so graphs of different
-order become directly comparable. It inherits permutation invariance from the
-spectrum, its coordinates are nondecreasing by construction, and they are
-confined to $[0,2]$, which bounds the input range. For $n-1>K$ the grid
-subsamples a dense spectrum, while for $n-1<K$ it interpolates between
-consecutive eigenvalues. In both cases, the first coordinates describe the
-low-frequency, connectivity end of the spectrum, and the last coordinates the
-high-frequency, bipartite-like end near $\lambda_n$.
-
-% =====================================================================
-\section{Fingerprint of Backdoor Trojan}
-We call the change that a trigger makes to the descriptor~\eqref{eq:specvec}
-its spectral fingerprint. Since the spectrum depends only on the edges, the
-fingerprint reflects the rewired edges of Section~\ref{sec:insertion}; feature
-perturbations, such as those of GTA, do not affect it. At inference time the
-defender observes a single graph, not its clean version, so the fingerprint
-cannot be measured as a difference. The question is instead whether the
-descriptor of an observed graph lies outside the variation of clean
-descriptors. Two detectors address this question. The statistical detector of
-Section~\ref{sec:stat} needs only clean graphs; it tests whether
-trigger-induced deviations exceed natural clean variation and serves as the
-reference. The MLP detector of Section~\ref{sec:mlp} is the proposed method; it
-learns a joint decision over all coordinates from labelled clean and triggered
-graphs.
-
-\subsection{Statistical Detection of Backdoor Trojan}\label{sec:stat}
-The statistical detector compares the descriptor of an observed graph with a
-reference built from clean graphs alone.
-
-\begin{definition}[Clean-Reference Statistical Detector]
-Let $\mathcal{R}$ be a reference set of clean graphs, and let $\mu_j$ and
-$\sigma_j$ be the sample mean and standard deviation of the $j$th coordinate
-$s_j$ of the descriptor over $\mathcal{R}$. For an observed graph $G$, the
-standardized deviation at coordinate $j$ and its two-sided Gaussian $p$-value
-are
-\begin{equation}
-z_j(G)=\frac{s_j(G)-\mu_j}{\sigma_j},
-\qquad
-p_j(G)=2\bigl[1-\Phi\bigl(|z_j(G)|\bigr)\bigr],
-\label{eq:clean-reference-test}
-\end{equation}
-where $\Phi$ is the standard normal cumulative distribution function. The
-detector applies the Holm procedure to the $p$-values of $G$ at level $\alpha$
-and flags $G$ if at least one coordinate is rejected:
-\begin{equation}
-\hat{b}_{\mathrm{stat}}(G)=
-\begin{cases}
-1, & \text{Holm rejects at least one } p_j(G),\\
-0, & \text{otherwise}.
-\end{cases}
-\label{eq:statistical-detector}
-\end{equation}
+The first condition is the backdoor behavior on triggered inputs, and the
+second is the preservation of clean behavior.
 \end{definition}
 
 \noindent
-Triggered graphs never enter $\mathcal{R}$. Since the decision asks only
-whether any coordinate is rejected, it is equivalent to comparing the smallest
-$p_j(G)$ with $\alpha/m$, where $m$ is the number of tested coordinates; the
-later steps of the Holm procedure do not change it. Because the Gaussian model
-is an approximation, $\alpha$ does not fix the rate at which clean graphs are
-flagged; this rate is measured on clean test graphs.
+The empirical counterparts of the two conditions, the attack success rate and
+the clean accuracy measured on test graphs, are defined in
+Section~\ref{sec:setup}.
+
+\subsubsection{Backdoor Insertion Framework}\label{sec:policy}
+A backdoor attack proceeds in three stages~\cite{sba2021,gta2021}: the attacker
+designs the trigger policy, poisons part of the training data with it, and
+releases the data to the owner of the target model, whose training implants
+the backdoor. Let $\calD=\{(G_i,y_i)\}_{i=1}^{N}$ be the clean training set.
+
+\paragraph{Trigger-Insertion Policy Design}
+Imperceptibility enters at this stage. With a surrogate classifier
+$f_{\hat\theta}$, the attacker seeks a policy that triggers the target label
+while changing each graph only slightly:
+\begin{equation}
+\begin{aligned}
+\max_{T}\;\; & \frac{1}{N}\sum_{i=1}^{N}
+  \mathbf{1}\bigl[h_{\hat\theta}(T(G_i,y_t))=y_t\bigr]\\
+\text{s.t.}\;\; & d\bigl(T(G_i,y_t),G_i\bigr)\le\epsilon,\quad i=1,\dots,N,
+\end{aligned}
+\label{eq:attack-design}
+\end{equation}
+where $d$ measures how much a trigger changes a graph and $\epsilon$ bounds this
+change. When $T$ is a neural network $T_\phi$ with weights $\phi$, problem
+\eqref{eq:attack-design} can be relaxed by replacing the constraint with a
+penalty $\gamma\,d$ and the indicator with the cross-entropy loss, so that
+$\phi$ can be trained by gradient descent. The trained generator then produces
+the trigger for a new graph in a single forward pass. In either form, $d$ is
+measured on the graph itself. The question of this paper is whether a trigger
+that changes the graph only slightly also leaves its spectrum nearly unchanged.
+
+\paragraph{Data Poisoning}
+The attacker applies the policy to a subset $\calD_p\subset\calD$ containing a
+fraction $\rho$ of the training graphs, relabels these graphs with $y_t$, and
+releases the poisoned training set
+\begin{equation}
+\widetilde{\calD}=(\calD\setminus\calD_p)\cup
+\bigl\{(T(G,y_t),\,y_t) : (G,y)\in\calD_p\bigr\}.
+\label{eq:poisoned-set}
+\end{equation}
+The attacker aims to keep the clean accuracy of the resulting model while
+increasing its attack success; this trade-off is evaluated empirically.
+
+\paragraph{Model Poisoning}
+The owner of the target model trains it on $\widetilde{\calD}$ as released,
+with its usual training loss and without any control by the attacker, and
+obtains the poisoned parameters $\theta^*$.
+
+\subsection{Trigger Insertion in Graphs}\label{sec:insertion}
+The three attacks evaluated here modify the structure of a graph inside a small
+region $\calV_g\subseteq\calV$ of $k=|\calV_g|$ nodes, the trigger size. The
+trigger removes a set of edges $\calE_{\mathrm{cut}}\subseteq\calE$ and inserts
+a set $\calE_g$, so that the triggered graph $\tilde G$ has the edge set
+\begin{equation}
+\tilde{\calE}=(\calE\setminus\calE_{\mathrm{cut}})\cup\calE_g,
+\label{eq:edge-composition}
+\end{equation}
+the same node set $\calV$, and possibly modified features on $\calV_g$. Attacks
+on node classification such as UGBA~\cite{ugba2022} and
+DPGBA~\cite{dpgba2023} instead inject new trigger nodes; the attacks evaluated
+here all select existing nodes and therefore preserve $n$. They differ in how
+they choose $\calE_{\mathrm{cut}}$ and $\calE_g$.
+
+\subsubsection{Static Triggers}\label{sec:static}
+SBA and Motif-Backdoor insert a fixed pattern $\Gamma=(\calV_\Gamma,\calE_\Gamma)$:
+an Erd\H{o}s--R\'enyi random graph for SBA~\cite{sba2021}, and for
+Motif-Backdoor the motif M44, a triangle with a pendant node
+attached~\cite{motif}. A placement map $\iota\colon\calV_\Gamma\to\calV$ chooses
+the host nodes $\calV_g=\iota(\calV_\Gamma)$, uniformly at random for SBA and by
+a model-guided ranking for Motif-Backdoor (Appendix~\ref{app:training}). The
+edges among the host nodes are replaced by the pattern, that is,
+$\calE_{\mathrm{cut}}=\calE[\calV_g]$, the edges with both endpoints in
+$\calV_g$, and $\calE_g=\iota(\calE_\Gamma)$. Edges between the host nodes and
+the rest of the graph, as well as all features, are unchanged. The pattern is
+fixed, but its effect on the spectrum can still vary with the host graph and
+the placement.
+
+\subsubsection{Dynamic Triggers}\label{sec:dynamic}
+GTA~\cite{gta2021} generates a trigger that depends on the host graph. For a
+selected region $\calV_g$, a topology generator proposes edges between nodes of
+$\calV_g$, which are added to the graph, and a feature generator perturbs the
+features of these nodes:
+\begin{equation}
+\tilde{\bA}=\max\bigl(\bA,\,\bA_\phi(G)\bigr),\qquad
+\tilde{\bX}=\bX+\bX_\phi(G).
+\label{eq:dynamic-trigger}
+\end{equation}
+Here $\bA_\phi(G)$ is a binary adjacency matrix with nonzero entries only
+between nodes of $\calV_g$, the maximum is taken entry by entry, and
+$\bX_\phi(G)$ is nonzero only in the rows of $\calV_g$. GTA therefore adds edges
+($\calE_{\mathrm{cut}}=\varnothing$) and changes features; the choice of
+$\calV_g$ itself is not learned.
+
+All three attacks thus change the edges of the graph. The spectral
+representation introduced next depends only on the edges: it reflects
+$\calE_{\mathrm{cut}}$ and $\calE_g$ but not the feature perturbation of GTA.
+
+\subsection{Graphs in Spectral Domain}\label{sec:spectral}
+The normalized Laplacian of $G$ is
+\begin{equation}
+\bL=\bI-\bD^{-1/2}\bA\bD^{-1/2}.
+\label{eq:laplacian}
+\end{equation}
+It is symmetric, so it has $n$ real eigenvalues
+$0\le\lambda_1\le\dots\le\lambda_n\le 2$ with orthonormal
+eigenvectors~\cite{chung1997spectral}. We call the vector
+$\blam(G)=[\lambda_1,\dots,\lambda_n]^{\top}$ the spectrum of $G$.
+
+An eigenvector $\bu$ of $\bL$ assigns a value
+$u_v$ to every node $v$. For a graph without isolated nodes and an eigenvector
+of unit length, the corresponding eigenvalue is
+\begin{equation}
+\lambda=\bu^{\top}\bL\bu=\sum_{\{v,w\}\in\calE}
+\Bigl(\frac{u_v}{\sqrt{d_v}}-\frac{u_w}{\sqrt{d_w}}\Bigr)^{2}.
+\label{eq:quadratic-form}
+\end{equation}
+An eigenvalue is therefore small when the values of its eigenvector, divided by
+the square root of the node degrees, are similar at the two ends of every
+edge, and large when they differ. In the language of graph signal
+processing~\cite{shuman2013gsp}, the eigenvectors are the oscillation modes of
+the graph and the eigenvalues their frequencies.
+
+The small eigenvalues, or low frequencies,
+describe how the graph is connected. An eigenvalue $0$ arises from an
+eigenvector that is constant (up to the degree scaling) on a connected
+component, so the number of zero eigenvalues equals the number of connected
+components, isolated nodes aside. For a connected graph, a small $\lambda_2$
+indicates a bottleneck: the graph can be split into two sizeable parts by
+removing comparatively few edges~\cite{chung1997spectral}. The large
+eigenvalues, or high frequencies, belong to eigenvectors whose values alternate
+between neighboring nodes. The largest possible value, $2$, occurs exactly when
+a connected component is bipartite, that is, when its nodes can be divided into
+two groups such that every edge joins the two
+groups~\cite{chung1997spectral}. The spectrum does not determine a graph
+uniquely, but it summarizes its connectivity: how many separate pieces it has,
+whether it has a bottleneck, and whether it is bipartite. A trigger that
+rewires the edges among a few nodes may change this connectivity locally, and
+with it some eigenvalues.
+
+The spectrum has one eigenvalue per node, so
+graphs of different size have spectra of different length that cannot be
+compared entry by entry. We therefore place the eigenvalue $\lambda_i$ at its
+relative position $r_i=(i-1)/(n-1)$ in the sorted spectrum, so that the first
+and last eigenvalues are at $0$ and $1$ for every $n\ge2$, and connect the
+points $(r_i,\lambda_i)$ by straight lines. The resulting nondecreasing curve
+$\Lambda_G\colon[0,1]\to[0,2]$ keeps the shape of the spectrum but not its
+length. Reading it at $K$ equally spaced positions gives the spectral
+descriptor
+\begin{equation}
+\bs(G)=\bigl[\Lambda_G(1/K),\,\Lambda_G(2/K),\,\dots,\,\Lambda_G(1)\bigr]^{\top}
+\in[0,2]^{K},
+\label{eq:specvec}
+\end{equation}
+with coordinates $s_j(G)=\Lambda_G(j/K)$. Position $0$ is omitted because
+$\Lambda_G(0)=\lambda_1=0$ for every graph with at least one edge. Since the
+eigenvalues do not depend on the order in which the nodes are numbered, neither
+does $\bs(G)$, so graphs can be compared without matching their nodes; and
+since every graph is mapped to the same $K$ positions, graphs of different
+size can be compared coordinate by coordinate. The first coordinates describe
+the low-frequency, connectivity end of the spectrum, and the last coordinates
+the high-frequency end, with $s_K(G)=\lambda_n$. When $n-1<K$, the positions
+fall between eigenvalues and neighboring coordinates interpolate between the
+same two eigenvalues, so they are strongly dependent; when $n-1>K$, the
+positions skip some eigenvalues. The number of positions $K$ is a free
+parameter of the method; the value used in the experiments is given in
+Section~\ref{sec:setup}.
+
+% =====================================================================
+\section{Fingerprint of Backdoor Trojan}\label{sec:fingerprint}
+We call the change that a trigger makes to the descriptor~\eqref{eq:specvec}
+its spectral fingerprint. A defender observes only the incoming graph, not its
+clean version, so the fingerprint cannot be measured as the difference
+$\bs(\tilde G)-\bs(G)$. Detection must instead decide whether the descriptor of
+the observed graph lies outside the range of clean descriptors. The detector
+acts at inference time, as a filter in front of an already trained model: a
+graph that it flags is rejected before it reaches the model. The poisoned
+training set is not cleaned, and the model is not retrained. We consider two
+detectors that differ in the data they need. The statistical detector
+(Section~\ref{sec:stat}) uses clean graphs only and asks, coordinate by
+coordinate, whether a graph deviates more than clean graphs do. The
+model-based detector (Section~\ref{sec:mlp}), which is the proposed method,
+additionally uses triggered examples and learns one decision over all
+coordinates.
+
+\subsection{Statistical Detection of Backdoor Trojan}\label{sec:stat}
+Let $\calR$ be a reference set of clean graphs, and let $\mu_j$ and $\sigma_j$ be
+the sample mean and standard deviation of the coordinate $s_j$ over $\calR$.
+Coordinates that are constant over $\calR$ carry no information and are
+discarded, which leaves $m\le K$ coordinates. For an observed graph $G$, each
+remaining coordinate is compared with the clean variation through a two-sided
+$p$-value under a Gaussian approximation,
+\begin{equation}
+p_j(G)=2\Bigl[1-\Phi\Bigl(\frac{|s_j(G)-\mu_j|}{\sigma_j}\Bigr)\Bigr],
+\label{eq:clean-reference-test}
+\end{equation}
+where $\Phi$ is the standard normal cumulative distribution function. The $m$
+$p$-values of $G$ are corrected with the Holm procedure at level $\alpha$
+(Section~\ref{sec:holm}), which does not require the tests to be independent;
+this matters here because neighboring coordinates are strongly dependent. The
+detector flags $G$, $\hat b_{\mathrm{stat}}(G)=1$, if at least one coordinate is
+rejected, that is, if the smallest $p$-value of $G$ is at most $\alpha/m$.
+
+The detector uses no triggered graphs. Because the Gaussian model is only an
+approximation, however, $\alpha$ does not fix the fraction of clean graphs that
+are flagged; this fraction is measured on test data in
+Section~\ref{sec:numerical}.
 
 \subsection{Model-Based Backdoor Detection}\label{sec:mlp}
-The statistical detector tests each coordinate separately and ignores
-dependencies between coordinates. The model-based detector instead learns
-one decision over the whole descriptor.
-
-\begin{definition}[MLP-Based Spectral Detector]
-Let the training set consist of clean graphs and their triggered versions,
-labelled $b=0$ and $b=1$, respectively, and let $\bar{\bs}(G)$ denote the
-descriptor with each coordinate standardized by statistics of the training
-graphs. An MLP $g_\psi$ with parameters $\psi$, trained with the binary
-cross-entropy loss, maps it to the detection score
-$q_\psi(G)=g_\psi\bigl(\bar{\bs}(G)\bigr)$. For a clean-rejection budget
-$\beta$, a threshold $\tau$ is set on held-out clean graphs so that the
-fraction of them flagged does not exceed $\beta$. The detector flags $G$ when
-its score exceeds the threshold:
+The statistical detector examines each coordinate on its own, so a fingerprint
+that consists of small deviations spread over many coordinates can go
+unnoticed. The model-based detector instead learns one decision over the whole
+descriptor. It is trained on clean graphs and their triggered versions,
+labelled $b=0$ and $b=1$, respectively. Each coordinate of the descriptor is
+standardized with the mean and standard deviation of the training graphs,
+which gives $\bar\bs(G)$, and an MLP $g_\psi$ with parameters $\psi$ is trained
+with the binary cross-entropy loss to output the detection score
+$q(G)=g_\psi\bigl(\bar\bs(G)\bigr)$. The detector flags $G$ when its score
+exceeds a threshold $\tau$:
 \begin{equation}
-\hat{b}_{\mathrm{MLP}}(G)=
+\hat b_{\mathrm{MLP}}(G)=
 \begin{cases}
-1, & q_{\psi}(G)>\tau,\\
+1, & q(G)>\tau,\\
 0, & \text{otherwise}.
 \end{cases}
 \label{eq:mlp-detector}
 \end{equation}
-\end{definition}
+The threshold is set on held-out clean graphs so that at most a fraction
+$\beta$ of them is flagged. The budget $\beta$ thus fixes the cost of the
+detector on clean inputs; setting it to the clean rejection rate of the
+statistical detector lets the two detectors be compared at the same cost
+(Section~\ref{sec:setup}). Logistic regression on $\bar\bs(G)$ serves as a
+linear reference: if the MLP separates the graphs better, part of the
+information lies in nonlinear combinations of coordinates.
 
-\noindent
-Logistic regression on the same standardized descriptor serves as a linear
-reference.
-
-Training requires triggered examples of the attack being detected. A separate
-detector is trained for each dataset and attack, and how a detector behaves on
-attacks it was not trained on is not addressed in this letter. Because a
-defender does not normally hold such examples, the MLP results indicate what a
-supervised detector can achieve on the descriptor; they do not describe a
-defense against unseen attacks.
+Training requires triggered examples of the attack to be detected, and a
+separate detector is trained for each dataset and attack. A defender does not
+normally hold such examples. The model-based results therefore show how much a
+detector can extract from the descriptor when the attack is known; they do not
+describe a defense against unseen attacks, and transfer across attacks is not
+studied in this paper.
 
 % =====================================================================
-\section{Numerical Results}
+\section{Numerical Results}\label{sec:numerical}
 
 \subsection{Simulation Setup}
 \label{sec:setup}
-Table~\ref{tab:setup} lists the configuration. The target model is a
-two-layer graph convolutional network (GCN)~\cite{gcn}. It is trained on five stratified folds, each holding
-out $20\%$ of the graphs for testing and $10\%$ for validation, and is
-evaluated at its best-validation checkpoint (Appendix~\ref{app:training}).
+Table~\ref{tab:setup} lists the configuration. The target model is a two-layer
+graph convolutional network (GCN)~\cite{gcn}. It is trained on five stratified
+folds, each holding out $20\%$ of the graphs for testing and $10\%$ for
+validation, and is evaluated at its best-validation checkpoint
+(Appendix~\ref{app:training}). All numbers are averages over the five folds.
 
 \begin{table}[t]
 \caption{Experimental configuration.}
@@ -644,57 +548,59 @@ Target model      & two-layer GCN, hidden dimension $64$, dropout $0.5$ \\
 Target training   & Adam, lr $10^{-3}$, weight decay $5\times10^{-4}$, batch $32$, up to $50$ epochs, early stopping patience $30$ \\
 Target split      & $70/10/20$ train/validation/test, five stratified folds \\
 Attack budget     & target class $y_t=0$; poisoning rate $\rho=0.10$; trigger size $k=4$ \\
-Descriptor        & normalized Laplacian; $K=100$ grid positions; positions with clean standard deviation below $10^{-6}$ are not used \\
-Statistical detector & two-sided Gaussian $p$-values; Holm at $\alpha=0.05$; $10^{-6}$ added to $\sigma_j$ \\
-Detector pool split & $70\%$ of source graphs for fitting, $30\%$ for threshold calibration \\
-Supervised detectors & logistic regression; MLP with one hidden layer of $64$ ReLU units \\
+Descriptor        & normalized Laplacian; $K=100$ positions \\
+Statistical detector & two-sided Gaussian $p$-values; Holm at $\alpha=0.05$ \\
+Detector pool split & $70\%$ of source graphs for training, $30\%$ for threshold calibration \\
+Model-based detectors & logistic regression; MLP with one hidden layer of $64$ ReLU units \\
 MLP optimization  & Adam, lr $10^{-3}$, $200$ epochs, batch $256$ \\
 Budget $\beta$    & clean rejection rate of the statistical detector on the pool, leave-one-out \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The detectors of each fold are built from the graphs outside its test split,
-called the pool, so no test graph influences a detector. The reference set
-$\mathcal{R}$ of the statistical detector contains all clean pool graphs. For
-the MLP and the logistic regression, the pool is split by source graph, so
-that a clean graph and its triggered version always fall on the same side.
-The fitting part provides the training pairs; the clean graphs of the
-calibration part set the threshold $\tau$. The budget $\beta$ is the rate at
-which the statistical detector rejects clean pool graphs, each scored against
-a reference that excludes it. Both detectors are therefore compared at
-approximately the same cost on clean graphs.
+The detectors of a fold are built only from the graphs outside
+its test split, called the pool, so no test graph influences a detector. The
+descriptor uses $K=100$ positions. This value is a fixed design choice; its
+influence is not studied in this paper. Since at least $93\%$ of the graphs in
+every dataset have $n\le K$ nodes, the descriptor interpolates between
+eigenvalues for most graphs, which is the case of strongly dependent
+neighboring coordinates noted in Section~\ref{sec:spectral}. The reference set
+$\calR$ of the statistical detector contains all clean pool graphs. For the
+logistic regression and the MLP, the pool is split by source graph, so that a
+clean graph and its triggered version always fall on the same side; the first
+part provides the training pairs, and the clean graphs of the second part set
+the threshold $\tau$. The budget $\beta$ is the rate at which the statistical
+detector flags clean pool graphs, each scored against a reference set from
+which it is left out. Both detectors therefore operate at approximately the
+same cost on clean graphs.
 
-% graphs with n<=100 (TUDataset raw files): AIDS 100%, MUTAG 100%, NCI1 99.83%, PROTEINS 93.98%
-With $K=100$, the grid interpolates between eigenvalues for at least $93\%$ of
-the graphs of every dataset ($n\le K$), so neighboring coordinates of the
-descriptor are strongly dependent. Holm's procedure does not require
-independence, and the influence of $K$ is not studied in this letter.
-
-All metrics are computed on the test split and averaged over the five folds.
-The clean accuracy (CA) and the attack success rate (ASR) are those of the
-poisoned target model. The false-positive rate (FPR) is the fraction of clean
-test graphs flagged. The true-positive rate (TPR) is the fraction of triggered
-test graphs flagged, taken over the eligible graphs: those whose true label
-differs from $y_t$ and to which the trigger can be applied. The ASR is computed
-over the same eligible graphs, which adds the second requirement to the
-conditioning event in its definition. The area under the receiver operating
-characteristic curve (ROC-AUC) summarizes how well the detector score separates
-clean and triggered graphs over all thresholds; graphs are ranked by $q_\psi$
-for the MLP, by the analogous output for logistic regression, and by the
-smallest Holm-adjusted $p$-value for the statistical detector. For
-the defense, flagged graphs are rejected before they reach the target model.
-The post-detection ASR counts a triggered graph as a successful attack only if
-it is accepted and classified as $y_t$; rejected graphs count as failed
-attacks. It is measured by running the target model on the accepted graphs,
-not derived from the TPR, because detection and attack success need not occur
-on the same graphs.
+Triggered test graphs are obtained by applying the trigger to
+the clean test graphs, so the two sets differ only by the trigger. A triggered
+graph is \emph{eligible} if its true label differs from $y_t$ and the trigger
+can be applied to it. The clean accuracy (CA) is the accuracy of the poisoned
+model on clean test graphs, and the attack success rate (ASR) is the fraction
+of eligible triggered test graphs that it assigns to $y_t$. For a detector, the
+false-positive rate (FPR) is the fraction of clean test graphs it flags, and
+the true-positive rate (TPR) is the fraction of eligible triggered test graphs
+it flags. The area under the receiver operating characteristic curve
+(ROC-AUC) measures how well a detector's score ranks triggered above clean
+graphs over all thresholds; $0.5$ corresponds to chance and $1$ to perfect
+separation. The score is $q(G)$ for the MLP, the corresponding output for
+logistic regression, and the smallest Holm-adjusted $p$-value for the
+statistical detector. For the defense, every eligible triggered test graph is
+first passed to the detector, and the graphs it flags are rejected. The
+post-detection ASR is the fraction of \emph{all} eligible triggered test graphs
+that are accepted and assigned to $y_t$ by the same poisoned model; a rejected
+graph counts as a failed attack. It is measured by running the model on the
+accepted graphs rather than derived from the TPR, because the triggered graphs
+that a detector misses need not be those on which the attack succeeds.
 
 \subsubsection{Datasets}
 AIDS, MUTAG, and NCI1 contain small molecules and are called the molecular
-datasets below. PROTEINS contains protein structures. All four come from the
-TUDataset benchmark~\cite{tudataset}; Appendix~\ref{app:structure} summarizes
-their structure (Table~\ref{tab:dataset_stats_graph}).
+datasets below. PROTEINS contains protein structures; its graphs are larger and
+have a higher average degree. All four come from the TUDataset
+benchmark~\cite{tudataset}; Appendix~\ref{app:structure} summarizes their
+structure (Table~\ref{tab:dataset_stats_graph}).
 
 \subsubsection{Backdoor Trojan Attacks}
 Each dataset is poisoned with SBA and Motif-Backdoor (static triggers,
@@ -707,142 +613,158 @@ graph. None of the attacks is adapted to the detectors.
 % Source: results/analysis/paper_graph_20260930 (+ _logreg); see the
 % provenance note at the top of this file. One table answers all three
 % questions; each subsubsection below reads one column group of it.
+Table~\ref{tab:results} collects all results. Its column groups follow the
+three questions of the introduction: whether the descriptor separates
+triggered from clean graphs at all (ROC-AUC), how many triggered graphs each
+detector flags at matched clean cost (FPR and TPR), and how much attack success
+remains after rejection. Before any defense, the poisoned models reach a clean
+accuracy of $0.672$--$0.903$. GTA succeeds on nearly every eligible graph
+(ASR $0.951$--$1.000$), whereas SBA and Motif-Backdoor succeed less often
+(ASR $0.086$--$0.518$) and only rarely on AIDS and MUTAG ($0.086$--$0.152$).
 
 \begin{table*}[t]
 \caption{Detection and defense results for a GCN target model, averaged over
-five folds. CA and ASR: clean accuracy and attack success rate of the poisoned
-model without defense. FPR and TPR (\%): clean and triggered test graphs
-flagged. AUC: ROC-AUC; the statistical detector ranks graphs by its smallest
-Holm-adjusted $p$-value. ASR after: attack success rate when flagged graphs are
-rejected. The MLP threshold is calibrated to the clean-rejection rate of the
-statistical detector; logistic regression (LR) is the linear reference.}
+five folds. Poisoned model: clean accuracy and attack success rate without
+defense. Separability: ROC-AUC of the statistical detector (Stat.), logistic
+regression (LR), and the MLP. Detection: fraction (\%) of clean (FPR) and
+triggered (TPR) test graphs flagged; the MLP threshold is calibrated to the
+clean rejection rate of the statistical detector, whose FPR does not depend on
+the attack because it uses no triggered graphs. Defense: attack success rate
+when flagged graphs are rejected.}
 \label{tab:results}
 \centering
 \tabstyle
-\begin{tabular}{llcc cccc c cccc}
+\begin{tabular}{ll cc ccc cc cc cc}
 \toprule
-         &        &       &       &
-\multicolumn{4}{c}{Statistical detector} &
-LR &
-\multicolumn{4}{c}{MLP detector} \\
-\cmidrule(lr){5-8}\cmidrule(lr){9-9}\cmidrule(lr){10-13}
-Dataset  & Attack & CA & ASR &
-FPR & TPR & AUC & ASR after &
-AUC &
-AUC & FPR & TPR & ASR after \\
+ & &
+\multicolumn{2}{c}{Poisoned model} &
+\multicolumn{3}{c}{Separability (ROC-AUC)} &
+\multicolumn{2}{c}{FPR (\%)} &
+\multicolumn{2}{c}{TPR (\%)} &
+\multicolumn{2}{c}{ASR after rejection} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-7}\cmidrule(lr){8-9}\cmidrule(lr){10-11}\cmidrule(lr){12-13}
+Dataset & Attack & CA & ASR &
+Stat. & LR & MLP &
+Stat. & MLP &
+Stat. & MLP &
+Stat. & MLP \\
 \midrule
-AIDS     & SBA   & 0.890 & 0.086 &   5.8 &  15.6 & 0.615 & 0.073 & 0.869 & 0.910 &   5.1 &  67.6 & 0.021 \\
-         & Motif & 0.896 & 0.090 &   5.8 &  32.8 & 0.733 & 0.065 & 0.977 & 0.993 &   4.9 &  99.4 & 0.000 \\
-         & GTA   & 0.903 & 0.999 &   5.8 &  76.0 & 0.939 & 0.240 & 0.995 & 0.999 &   6.3 &  99.9 & 0.001 \\
+AIDS     & SBA   & 0.890 & 0.086 & 0.615 & 0.869 & 0.910 & \multirow{3}{*}{5.8} & 5.1 & 15.6 &  67.6 & 0.073 & 0.021 \\
+         & Motif & 0.896 & 0.090 & 0.733 & 0.977 & 0.993 &                      & 4.9 & 32.8 &  99.4 & 0.065 & 0.000 \\
+         & GTA   & 0.903 & 0.999 & 0.939 & 0.995 & 0.999 &                      & 6.3 & 76.0 &  99.9 & 0.240 & 0.001 \\
 \midrule
-MUTAG    & SBA   & 0.745 & 0.152 &   7.5 &  68.8 & 0.886 & 0.064 & 0.985 & 0.983 &   8.0 &  96.0 & 0.000 \\
-         & Motif & 0.750 & 0.152 &   7.5 &  95.2 & 0.985 & 0.000 & 1.000 & 1.000 &   8.0 & 100.0 & 0.000 \\
-         & GTA   & 0.756 & 1.000 &   7.5 &  96.8 & 0.986 & 0.032 & 1.000 & 1.000 &   6.9 & 100.0 & 0.000 \\
+MUTAG    & SBA   & 0.745 & 0.152 & 0.886 & 0.985 & 0.983 & \multirow{3}{*}{7.5} & 8.0 & 68.8 &  96.0 & 0.064 & 0.000 \\
+         & Motif & 0.750 & 0.152 & 0.985 & 1.000 & 1.000 &                      & 8.0 & 95.2 & 100.0 & 0.000 & 0.000 \\
+         & GTA   & 0.756 & 1.000 & 0.986 & 1.000 & 1.000 &                      & 6.9 & 96.8 & 100.0 & 0.032 & 0.000 \\
 \midrule
-NCI1     & SBA   & 0.680 & 0.330 &   9.2 &  21.0 & 0.621 & 0.254 & 0.868 & 0.913 &   8.7 &  76.3 & 0.083 \\
-         & Motif & 0.681 & 0.518 &   9.2 &  30.8 & 0.681 & 0.348 & 0.935 & 0.990 &   9.0 &  99.2 & 0.004 \\
-         & GTA   & 0.672 & 1.000 &   9.2 &  42.5 & 0.747 & 0.575 & 0.977 & 0.996 &   9.7 &  99.7 & 0.003 \\
+NCI1     & SBA   & 0.680 & 0.330 & 0.621 & 0.868 & 0.913 & \multirow{3}{*}{9.2} & 8.7 & 21.0 &  76.3 & 0.254 & 0.083 \\
+         & Motif & 0.681 & 0.518 & 0.681 & 0.935 & 0.990 &                      & 9.0 & 30.8 &  99.2 & 0.348 & 0.004 \\
+         & GTA   & 0.672 & 1.000 & 0.747 & 0.977 & 0.996 &                      & 9.7 & 42.5 &  99.7 & 0.575 & 0.003 \\
 \midrule
-PROTEINS & SBA   & 0.697 & 0.518 &   3.1 &   7.6 & 0.553 & 0.489 & 0.830 & 0.883 &   3.2 &  40.9 & 0.300 \\
-         & Motif & 0.704 & 0.484 &   3.1 &  11.8 & 0.553 & 0.449 & 0.761 & 0.844 &   3.1 &  34.2 & 0.307 \\
-         & GTA   & 0.724 & 0.951 &   3.1 &  11.3 & 0.603 & 0.844 & 0.842 & 0.881 &   3.2 &  49.8 & 0.462 \\
+PROTEINS & SBA   & 0.697 & 0.518 & 0.553 & 0.830 & 0.883 & \multirow{3}{*}{3.1} & 3.2 &  7.6 &  40.9 & 0.489 & 0.300 \\
+         & Motif & 0.704 & 0.484 & 0.553 & 0.761 & 0.844 &                      & 3.1 & 11.8 &  34.2 & 0.449 & 0.307 \\
+         & GTA   & 0.724 & 0.951 & 0.603 & 0.842 & 0.881 &                      & 3.2 & 11.3 &  49.8 & 0.844 & 0.462 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \subsubsection{Statistical Detection}
-The statistical detector asks whether a triggered graph departs from the
-clean reference at some coordinate by more than clean graphs do. Every eligible
-triggered test graph is a clean test graph edited only by the trigger, so a
-triggered rejection rate above the clean rate shows that the trigger's spectral
-fingerprint lies outside the clean variation. Without multiple-testing
-correction, the nominal coordinatewise level flags $30.8\%$--$64.3\%$ of clean
-test graphs, because every graph is tested at many coordinates. With Holm
-correction, the clean rejection falls to $3.1\%$--$9.2\%$
-(Table~\ref{tab:results}). At this cost, the detector flags
-$68.8\%$--$96.8\%$ of triggered MUTAG graphs, and GTA yields the highest
-triggered rejection on AIDS and NCI1, at $76.0\%$ and $42.5\%$, respectively.
-Under SBA and Motif-Backdoor on AIDS and NCI1, it flags only
-$15.6\%$--$32.8\%$ of triggered graphs, which is $2.3$ to $5.7$ times its clean
-rejection. On PROTEINS, the triggered rejection of $7.6\%$--$11.8\%$ is $2.5$ to
-$3.9$ times the clean rejection of $3.1\%$, and the ROC-AUC of its ranking score
-is only $0.553$--$0.603$. Trigger insertion thus moves the descriptor beyond
-the natural clean variation for most triggered graphs only on MUTAG and under
-GTA on AIDS; in the remaining settings, most triggered graphs have no single
-coordinate that deviates enough to survive the correction.
+This part asks whether a trigger moves the descriptor beyond the variation of
+clean graphs. Since each triggered test graph differs from a clean test graph
+only by its trigger, a TPR of the statistical detector above its FPR means that
+this happens for the flagged graphs. The multiple-testing correction is
+essential for this reading. Without it, the coordinatewise test flags
+$30.8\%$--$64.3\%$ of clean test graphs, because each graph is tested at many
+coordinates; with the Holm correction, the clean rejection falls to
+$3.1\%$--$9.2\%$. At this cost, the detector flags most triggered graphs only
+on MUTAG ($68.8\%$--$96.8\%$) and under GTA on AIDS ($76.0\%$); on NCI1, GTA also
+gives its highest TPR, $42.5\%$. Under SBA and Motif-Backdoor on AIDS and NCI1,
+it flags $15.6\%$--$32.8\%$ of triggered graphs, which is $2.3$ to $5.7$ times its
+clean rejection. On PROTEINS, the TPR of $7.6\%$--$11.8\%$ is $2.5$ to $3.9$ times
+the FPR of $3.1\%$, but the ROC-AUC remains low, $0.553$--$0.603$ against $0.5$
+for chance. Measured one coordinate at a time against the clean variation, the
+trigger is thus visible for most triggered graphs only on MUTAG and under GTA
+on AIDS; in the remaining settings, most triggered graphs have no single
+coordinate that deviates enough to survive the correction. Whether the
+descriptor as a whole carries more information is the subject of the next
+part.
 
 \subsubsection{MLP Detection Performance}
-The MLP reaches ROC-AUC values of $0.844$--$1.000$ and, at its calibrated
-threshold, detects $34.2\%$--$100.0\%$ of triggered graphs at an FPR of
-$3.1\%$--$9.7\%$. Its ROC-AUC exceeds that of logistic regression in $9$ of
-the $12$ settings, with the largest gains under Motif-Backdoor on PROTEINS
-($0.761$ to $0.844$) and NCI1 ($0.935$ to $0.990$). This gain
-indicates that part of the discriminative information lies in nonlinear
-combinations of coordinates. On MUTAG, both models separate the graphs almost
-perfectly, and logistic regression is slightly higher under SBA; the MLP thus
-does not uniformly dominate the linear reference.
+The model-based detectors show that the trigger leaves a clearer fingerprint
+than the coordinatewise test reveals. The MLP reaches ROC-AUC values of
+$0.844$--$1.000$ and, at its calibrated threshold, flags $34.2\%$--$100.0\%$ of
+triggered graphs at an FPR of $3.1\%$--$9.7\%$; at matched clean cost, its TPR
+exceeds that of the statistical detector in every setting. Part of this gain
+comes from supervision alone: logistic regression already exceeds the ROC-AUC
+of the statistical detector in every setting. The MLP improves on logistic
+regression in $9$ of the $12$ settings, most under Motif-Backdoor on PROTEINS
+($0.761$ to $0.844$) and NCI1 ($0.935$ to $0.990$), so part of the information
+lies in nonlinear combinations of coordinates. On MUTAG, both separate the
+graphs almost perfectly, and logistic regression is slightly higher under SBA;
+the MLP does not uniformly dominate the linear reference.
 
 PROTEINS remains the most difficult dataset. At an FPR of $3.1\%$--$3.2\%$, the
-MLP detects $34.2\%$--$49.8\%$ of triggered graphs, whereas the statistical
-detector, at the same clean cost, detects $7.6\%$--$11.8\%$. Part of this gap
-comes from supervision, since the statistical detector uses no triggered
-examples: logistic regression already reaches ROC-AUC $0.761$--$0.842$, against
-$0.553$--$0.603$ for the statistical detector, and the MLP adds $0.04$--$0.08$.
-Because no single coordinate separates most triggered PROTEINS graphs from clean
-ones, this indicates that weak deviations spread across the descriptor remain
-jointly discriminative once labelled examples are available.
+MLP flags $34.2\%$--$49.8\%$ of triggered graphs, against $7.6\%$--$11.8\%$ for
+the statistical detector; logistic regression reaches ROC-AUC
+$0.761$--$0.842$, and the MLP adds $0.04$--$0.08$. Since no single coordinate
+separates most triggered PROTEINS graphs from clean ones, weak deviations
+spread over the descriptor remain jointly informative once labelled examples
+are available. PROTEINS graphs are also larger and denser than the molecular
+ones (Table~\ref{tab:dataset_stats_graph}), so a four-node trigger changes a
+smaller part of the graph. This is a possible contributor to the weaker
+detection, not a cause established by these experiments.
 
 \subsubsection{Analyzing Overall Defense Capability}
-The ASR columns of Table~\ref{tab:results} show the effect of rejecting
-flagged graphs, and the reduction follows the separation reported above.
-Under GTA, which succeeds on almost every eligible graph, the MLP lowers ASR
-from $0.999$ to $0.001$ on AIDS, from $1.000$ to $0.000$ on MUTAG, and from
-$1.000$ to $0.003$ on NCI1, whereas the statistical detector leaves $0.240$,
-$0.032$, and $0.575$, respectively. On PROTEINS under GTA, rejection lowers ASR
-from $0.951$ to $0.844$ with the statistical detector and to $0.462$ with the
-MLP, so substantial backdoor behavior remains. The same holds for SBA and
-Motif-Backdoor on PROTEINS, with post-detection ASR between $0.300$ and
-$0.489$. SBA and Motif-Backdoor succeed on few AIDS and MUTAG graphs even
-without a defense (ASR $0.086$--$0.152$), so the absolute reductions there are
-small.
+The last column group of Table~\ref{tab:results} shows the effect of rejecting
+flagged graphs, and it follows the separability reported above. Under GTA, the
+MLP lowers the ASR from $0.999$ to $0.001$ on AIDS, from $1.000$ to $0.000$ on
+MUTAG, and from $1.000$ to $0.003$ on NCI1, whereas the statistical detector
+leaves $0.240$, $0.032$, and $0.575$, respectively. On PROTEINS under GTA,
+rejection lowers the ASR from $0.951$ to $0.844$ with the statistical detector
+and to $0.462$ with the MLP, so substantial backdoor behavior remains; under
+SBA and Motif-Backdoor on PROTEINS, the post-detection ASR stays between
+$0.300$ and $0.489$. On AIDS and MUTAG, SBA and Motif-Backdoor succeed rarely
+even without defense, so the absolute reductions there are small.
 
-The MLP yields a post-detection ASR no higher than that of the statistical
-detector in every setting; the two are equal only on MUTAG under
+The post-detection ASR of the MLP is no higher than that of the statistical
+detector in every setting, and the two are equal only on MUTAG under
 Motif-Backdoor, where both reach $0.000$. This comparison is descriptive: the
 five folds are not independent experiments, and the FPRs of the two detectors
-differ by less than one percentage point. Spectral rejection therefore suppresses
-the backdoor when the triggered descriptor leaves the range of clean
-variation, and its benefit shrinks as the clean and triggered distributions
-overlap.
+differ by less than one percentage point. Rejection thus nearly removes the
+backdoor where clean and triggered descriptors are well separated, and its
+benefit shrinks as they overlap.
 
+% =====================================================================
 \section{Conclusion}
-This letter examined whether structural backdoor triggers in graph
-classification remain imperceptible in the spectral domain. On the molecular
-benchmarks, a spectrum-only MLP separates triggered from clean graphs with
-ROC-AUC between $0.91$ and $1.00$ and, when used to reject inputs, removes
-nearly all success of the learned GTA trigger on AIDS, MUTAG, and NCI1 while
-rejecting $6.3\%$--$9.7\%$ of clean graphs. The clean-reference test is
-weaker: it flags most triggered graphs only on MUTAG and under GTA on AIDS. On
-PROTEINS, both detectors are less effective and substantial attack success
-remains after rejection. Three limitations bound these findings. The MLP is
-trained on triggered graphs of the attack it detects, so its results bound what
-the spectrum reveals rather than describe a defense against unseen attacks, and
-transfer across attacks is not addressed. The attacks are not adapted to the
-detectors, and only a GCN target model and structural triggers are considered.
-No non-spectral baseline is compared, so the detectors may respond to any
-structural change that the spectrum reflects, such as a changed edge count.
-Detecting triggers without labelled examples, and against adaptive attackers,
-remains open.
+This paper examined whether structural backdoor triggers in graph
+classification remain imperceptible in the spectral domain. The answer depends
+on how the spectrum is examined. Tested one coordinate at a time against the
+variation of clean graphs, the trigger is visible for most triggered graphs
+only on MUTAG and under GTA on AIDS. Learned jointly over the whole
+descriptor, the fingerprint is much clearer: on the molecular benchmarks, a
+spectrum-only MLP separates triggered from clean graphs with ROC-AUC between
+$0.91$ and $1.00$ and, when used to reject inputs, removes nearly all success of
+the learned GTA trigger on AIDS, MUTAG, and NCI1 while rejecting
+$6.3\%$--$9.7\%$ of clean graphs. On PROTEINS, both detectors are less
+effective, and substantial attack success remains after rejection.
 
-% Optional -- IEEE prefers funding acknowledgments in the first-page
-% footnote (\thanks) rather than here.
+Three limitations bound these findings. First, the MLP is trained on triggered
+graphs of the attack it detects, so its results measure what the spectrum
+reveals about a known attack rather than describe a defense against unseen
+attacks; transfer across attacks is not addressed. Second, the attacks are not
+adapted to the detectors, and only a GCN target model and structural triggers
+are considered. Third, no non-spectral baseline is compared, so the detectors
+may respond to any structural change that the spectrum reflects, such as a
+changed number of edges. Detecting triggers without labelled examples, and
+against attackers that adapt to the detector, remains open.
+
 % \section*{Acknowledgment}
 
 % =====================================================================
-% References. IEEEtran.bst is fetched by tectonic and ships with both
-% TeX Live and Overleaf, so it is not vendored in this repo.
+% References. IEEEtran.bst ships with TeX Live and Overleaf, so it is not
+% vendored in this repo.
 %
-% main.bib holds the curated source records for this letter. Verify each
+% main.bib holds the curated source records for this paper. Verify each
 % record against the publisher's own export before submission.
 % =====================================================================
 \newpage
@@ -858,7 +780,7 @@ split reserves $10\%$ of the full dataset for validation. The split seed is
 $12345$ and the model seed is $0$. The reported results use a GCN target
 model at trigger size $k=4$; runs with GraphSAGE~\cite{graphsage} and
 GAT~\cite{gat} target models and at other trigger sizes are not included in
-this letter.
+this paper.
 
 The graph-attack task file configures SBA with an Erd\H{o}s--R\'enyi pattern
 and Motif-Backdoor with the M44 motif. The run records store the shared budget
@@ -866,9 +788,20 @@ and target settings but not the remaining attack parameters, which are
 implementation defaults: SBA edge probability $0.5$, Motif-Backdoor candidate
 pool of $10$ nodes, and, for GTA, two-hop adjacency and aggregated node
 features as generator input, topology threshold $0.5$, feature threshold $0$,
-and generator learning rate $0.01$. For a graph with fewer than $k$ nodes, SBA
-inserts the pattern induced on the available nodes if there are at least two;
-otherwise, and for Motif and GTA, the graph is left unchanged.
+and generator learning rate $0.01$. SBA places its pattern on uniformly
+sampled host nodes. Motif-Backdoor ranks high-degree candidate nodes by how
+much the surrogate logits change when their incident edges are removed. For
+GTA, the generated adjacency is binarized with the topology threshold and
+restricted to pairs of nodes in the selected region. For a graph with fewer
+than $k$ nodes, SBA inserts the pattern induced on the available nodes if
+there are at least two; otherwise, and for Motif-Backdoor and GTA, the graph is
+left unchanged.
+
+For an isolated node, the corresponding entry of $\bD^{-1/2}$
+in~\eqref{eq:laplacian} is set to zero, so that each isolated node contributes
+an eigenvalue of $1$. Coordinates whose clean standard deviation over $\calR$
+is below $10^{-6}$ are treated as constant and discarded, and $10^{-6}$ is added
+to $\sigma_j$ in~\eqref{eq:clean-reference-test} for numerical stability.
 
 \section{Benchmark Structure}
 \label{app:structure}
