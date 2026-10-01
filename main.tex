@@ -246,10 +246,11 @@ $h_\theta(G)=\arg\max_{c\in\calC} f_{\theta,c}(G)$.
 The statistical detector of Section~\ref{sec:stat} tests each graph at many
 coordinates of its spectral descriptor at once. Even for a clean graph, some of
 these tests would reject by chance, so the tests of one graph are corrected for
-multiplicity with Holm's step-down procedure~\cite{holm1979}. Given $m$
-$p$-values sorted in increasing order, the procedure compares the smallest with
-$\alpha/m$, the second smallest with $\alpha/(m-1)$, and so on, and rejects the
-hypotheses up to the first comparison that fails. For valid $p$-values, the
+multiplicity with Holm's step-down procedure~\cite{holm1979}. For a prescribed
+significance level $\alpha$ and $m$ $p$-values sorted in increasing order, the
+procedure compares the smallest with $\alpha/m$, the second smallest with
+$\alpha/(m-1)$, and so on, and rejects all hypotheses before the first
+comparison that fails. For valid $p$-values, the
 probability of rejecting at least one true hypothesis is then at most $\alpha$,
 without requiring the tests to be independent. In this paper, only whether a
 graph has at least one rejection matters. This is decided by the first
@@ -308,7 +309,8 @@ while changing each graph only slightly:
 where $d$ measures how much a trigger changes a graph and $\epsilon$ bounds this
 change. When $T$ is a neural network $T_\phi$ with weights $\phi$, problem
 \eqref{eq:attack-design} can be relaxed by replacing the constraint with a
-penalty $\gamma\,d$ and the indicator with the cross-entropy loss, so that
+penalty $d$ weighted by $\gamma>0$ and the indicator with the cross-entropy
+loss, so that
 $\phi$ can be trained by gradient descent. The trained generator then produces
 the trigger for a new graph in a single forward pass. In either form, $d$ is
 measured on the graph itself. The question of this paper is whether a trigger
@@ -383,10 +385,10 @@ $\calE_{\mathrm{cut}}$ and $\calE_g$ but not the feature perturbation of GTA.
 \subsection{Graphs in Spectral Domain}\label{sec:spectral}
 The normalized Laplacian of $G$ is
 \begin{equation}
-\bL=\bI-\bD^{-1/2}\bA\bD^{-1/2}.
+\bL=\bI-\bD^{-1/2}\bA\bD^{-1/2},
 \label{eq:laplacian}
 \end{equation}
-It is symmetric, so it has $n$ real eigenvalues
+where $\bI$ is the $n\times n$ identity matrix. It is symmetric, so it has $n$ real eigenvalues
 $0\le\lambda_1\le\dots\le\lambda_n\le 2$ with orthonormal
 eigenvectors~\cite{chung1997spectral}. We call the vector
 $\blam(G)=[\lambda_1,\dots,\lambda_n]^{\top}$ the spectrum of $G$.
@@ -612,12 +614,15 @@ graph. None of the attacks is adapted to the detectors.
 \subsection{Simulation Results}
 % Source: results/analysis/paper_graph_20260930 (+ _logreg); see the
 % provenance note at the top of this file. One table answers all three
-% questions; each subsubsection below reads one column group of it.
-Table~\ref{tab:results} collects all results. Its column groups follow the
-three questions of the introduction: whether the descriptor separates
-triggered from clean graphs at all (ROC-AUC), how many triggered graphs each
-detector flags at matched clean cost (FPR and TPR), and how much attack success
-remains after rejection. Before any defense, the poisoned models reach a clean
+% questions of the introduction; each subsubsection below reads part of it.
+Table~\ref{tab:results} collects all results and answers the three questions
+of the introduction. The columns of the statistical detector show whether a
+trigger moves the descriptor beyond the clean variation
+(Section~\ref{sec:res-stat}); the logistic-regression and MLP columns show
+whether the descriptor as a whole separates triggered from clean graphs
+(Section~\ref{sec:res-mlp}); and the last column group shows how much attack
+success remains after rejection (Section~\ref{sec:res-defense}). Before any
+defense, the poisoned models reach a clean
 accuracy of $0.672$--$0.903$. GTA succeeds on nearly every eligible graph
 (ASR $0.951$--$1.000$), whereas SBA and Motif-Backdoor succeed less often
 (ASR $0.086$--$0.518$) and only rarely on AIDS and MUTAG ($0.086$--$0.152$).
@@ -668,7 +673,7 @@ PROTEINS & SBA   & 0.697 & 0.518 & 0.553 & 0.830 & 0.883 & \multirow{3}{*}{3.1} 
 \end{tabular}
 \end{table*}
 
-\subsubsection{Statistical Detection}
+\subsubsection{Statistical Detection}\label{sec:res-stat}
 This part asks whether a trigger moves the descriptor beyond the variation of
 clean graphs. Since each triggered test graph differs from a clean test graph
 only by its trigger, a TPR of the statistical detector above its FPR means that
@@ -689,7 +694,7 @@ coordinate that deviates enough to survive the correction. Whether the
 descriptor as a whole carries more information is the subject of the next
 part.
 
-\subsubsection{MLP Detection Performance}
+\subsubsection{MLP Detection Performance}\label{sec:res-mlp}
 The model-based detectors show that the trigger leaves a clearer fingerprint
 than the coordinatewise test reveals. The MLP reaches ROC-AUC values of
 $0.844$--$1.000$ and, at its calibrated threshold, flags $34.2\%$--$100.0\%$ of
@@ -714,7 +719,7 @@ ones (Table~\ref{tab:dataset_stats_graph}), so a four-node trigger changes a
 smaller part of the graph. This is a possible contributor to the weaker
 detection, not a cause established by these experiments.
 
-\subsubsection{Analyzing Overall Defense Capability}
+\subsubsection{Analyzing Overall Defense Capability}\label{sec:res-defense}
 The last column group of Table~\ref{tab:results} shows the effect of rejecting
 flagged graphs, and it follows the separability reported above. Under GTA, the
 MLP lowers the ASR from $0.999$ to $0.001$ on AIDS, from $1.000$ to $0.000$ on
